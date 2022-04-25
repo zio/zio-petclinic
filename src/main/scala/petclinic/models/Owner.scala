@@ -6,7 +6,7 @@ import java.util.UUID
 
 
 // wraps UUID as a specific OwnerId so that we cannot use an incorrect UUID
-case class OwnerId(id: UUID) extends AnyVal
+final case class OwnerId(id: UUID) extends AnyVal
 
 object OwnerId {
   def random: ZIO[Random, Nothing, OwnerId] = Random.nextUUID.map(OwnerId(_))
@@ -14,19 +14,19 @@ object OwnerId {
 
 
 // extracts address to reduce the number of fields in owner
-case class Address(ownerId: OwnerId, street: String, city: String, state: String, zip: String)
+final case class Address(ownerId: OwnerId, street: String, city: String, state: String, zip: String)
 
 object Address {
-  def create(ownerId: OwnerId, street: String, city: String, state: String, zip: String): Address =
+  def make(ownerId: OwnerId, street: String, city: String, state: String, zip: String): Address =
     Address(ownerId, street, city, state, zip)
 }
 
 
 // represents an owner of a pet
-case class Owner(id: OwnerId, firstName: String, lastName: String, address: Address, ph: String)
+final case class Owner(id: OwnerId, firstName: String, lastName: String, address: Address, ph: String)
 
 object Owner {
-  def create(firstName: String, lastName: String, address: Address, ph: String): ZIO[Random, Nothing, Owner] = {
+  def make(firstName: String, lastName: String, address: Address, ph: String): ZIO[Random, Nothing, Owner] = {
     OwnerId.random.map(id => Owner(id , firstName, lastName, address, ph))
   }
 }
