@@ -14,7 +14,7 @@ object OwnerId {
 final case class Address(ownerId: OwnerId, street: String, city: String, state: String, zip: String)
 
 // represents an owner of a pet
-final case class Owner private (id: OwnerId, firstName: String, lastName: String, phone: String)
+final case class Owner(id: OwnerId, firstName: String, lastName: String, phone: String)
 
 object Owner {
   def apply(firstName: String, lastName: String, phone: String): ZIO[Random, Nothing, Owner] =
