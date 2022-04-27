@@ -1,14 +1,12 @@
-package petclinic
+package petclinic.server.routes
 
-import petclinic.models.{Address, Owner, OwnerId}
+import petclinic.models.OwnerId
+import petclinic.services.OwnerService
 import zhttp.http._
-import zhttp.service.Server
-import zio.ZIOAppDefault
-import petclinic.services._
+import zio.ZIO
 import zio.json._
-import zio._
 
-object ClinicServer extends ZIOAppDefault {
+object OwnerRoutes {
 
   final case class CreateOwner(firstName: String, lastName: String, address: String, phone: String)
 
@@ -32,20 +30,10 @@ object ClinicServer extends ZIOAppDefault {
 
   }
 
-  sealed trait AppError extends Throwable
-
-  object AppError {
-
-    case object MissingBodyError extends AppError
-
-    case class JsonDecodingError(message: String) extends AppError
-
-  }
-
-  val ownerRoutes: Http[OwnerService, Throwable, Request, Response] =
+  val routes: Http[OwnerService, Throwable, Request, Response] =
     Http.collectZIO[Request] {
 
-      // get one owner
+      // get an owner
       case Method.GET -> !! / "owners" / id =>
         for {
           id    <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
@@ -88,9 +76,4 @@ object ClinicServer extends ZIOAppDefault {
           owner <- OwnerService.delete(id)
         } yield Response.ok
     }
-
-  override val run: ZIO[Any, Throwable, Nothing] =
-    Server
-      .start(8080, ownerRoutes)
-      .provide(Random.live, QuillContext.dataSourceLayer, OwnerServiceLive.layer)
 }

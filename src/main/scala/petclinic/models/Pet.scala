@@ -1,7 +1,7 @@
 package petclinic.models
 
 import io.getquill.MappedEncoding
-import zio.{Random, ZIO}
+import zio.{Random, Task, ZIO}
 import zio.json._
 
 import java.util.UUID
@@ -13,6 +13,11 @@ object PetId {
   def random: ZIO[Random, Nothing, PetId] = Random.nextUUID.map(PetId(_))
 
   implicit val codec: JsonCodec[PetId] = JsonCodec[UUID].transform(PetId(_), _.id)
+
+  def fromString(id: String): Task[PetId] =
+    ZIO.attempt {
+      PetId(UUID.fromString(id))
+    }
 }
 
 // extracts species to limit user selection
