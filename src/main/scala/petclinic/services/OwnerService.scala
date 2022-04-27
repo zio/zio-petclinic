@@ -1,6 +1,6 @@
 package petclinic.services
 
-import petclinic.models.{Address, Owner, OwnerId}
+import petclinic.models.{Owner, OwnerId}
 import petclinic.QuillContext
 import zio._
 
@@ -8,7 +8,7 @@ import javax.sql.DataSource
 
 trait OwnerService {
 
-  def create(firstName: String, lastName: String, phone: String): Task[Owner]
+  def create(firstName: String, lastName: String, address: String, phone: String): Task[Owner]
   def delete(id: OwnerId): Task[Unit]
   def get(id: OwnerId): Task[Option[Owner]]
   def getAll: Task[List[Owner]]
@@ -16,16 +16,16 @@ trait OwnerService {
       id: OwnerId,
       firstName: Option[String] = None,
       lastName: Option[String] = None,
-      phone: Option[String] = None,
-      address: Option[Address] = None
+      address: Option[String] = None,
+      phone: Option[String] = None
   ): Task[Unit]
 
 }
 
 object OwnerService {
 
-  def create(firstName: String, lastName: String, phone: String): ZIO[OwnerService, Throwable, Owner] =
-    ZIO.serviceWithZIO[OwnerService](_.create(firstName, lastName, phone))
+  def create(firstName: String, lastName: String, address: String, phone: String): ZIO[OwnerService, Throwable, Owner] =
+    ZIO.serviceWithZIO[OwnerService](_.create(firstName, lastName, address, phone))
 
   def delete(id: OwnerId): ZIO[OwnerService, Throwable, Unit] =
     ZIO.serviceWithZIO[OwnerService](_.delete(id))
@@ -40,10 +40,10 @@ object OwnerService {
       id: OwnerId,
       firstName: Option[String],
       lastName: Option[String],
-      phone: Option[String],
-      address: Option[Address]
+      address: Option[String],
+      phone: Option[String]
   ): ZIO[OwnerService, Throwable, Unit] =
-    ZIO.serviceWithZIO[OwnerService](_.update(id, firstName, lastName, phone, address))
+    ZIO.serviceWithZIO[OwnerService](_.update(id, firstName, lastName, address, phone))
 
 }
 
@@ -51,9 +51,9 @@ final case class OwnerServiceLive(random: Random, dataSource: DataSource) extend
 
   import QuillContext._
 
-  override def create(firstName: String, lastName: String, phone: String): Task[Owner] =
+  override def create(firstName: String, lastName: String, address: String, phone: String): Task[Owner] =
     for {
-      owner <- Owner.apply(firstName, lastName, phone).provideService(random)
+      owner <- Owner.apply(firstName, lastName, address, phone).provideService(random)
       _     <- run(query[Owner].insertValue(lift(owner))).provideService(dataSource)
     } yield owner
 
@@ -76,38 +76,18 @@ final case class OwnerServiceLive(random: Random, dataSource: DataSource) extend
       id: OwnerId,
       firstName: Option[String],
       lastName: Option[String],
-      phone: Option[String],
-      address: Option[Address]
-  ): Task[Unit] =
-    for {
-      _ <- updateOwner(id, firstName, lastName, phone)
-      _ <- address match {
-             case Some(address) => updateAddress(id, address)
-             case None          => ZIO.unit
-           }
-    } yield ()
-
-  // Private methods
-
-  private def updateOwner(
-      id: OwnerId,
-      firstName: Option[String],
-      lastName: Option[String],
+      address: Option[String],
       phone: Option[String]
   ): Task[Unit] =
     run(
       dynamicQuery[Owner]
         .filter(_.id == lift(id))
-        .update(setOpt(_.firstName, firstName), setOpt(_.lastName, lastName), setOpt(_.phone, phone))
-    )
-      .provideService(dataSource)
-      .unit
-
-  private def updateAddress(id: OwnerId, address: Address): Task[Unit] =
-    run(
-      query[Address]
-        .filter(_.ownerId == lift(id))
-        .updateValue(lift(address))
+        .update(
+          setOpt(_.firstName, firstName),
+          setOpt(_.lastName, lastName),
+          setOpt(_.address, address),
+          setOpt(_.phone, phone)
+        )
     )
       .provideService(dataSource)
       .unit
