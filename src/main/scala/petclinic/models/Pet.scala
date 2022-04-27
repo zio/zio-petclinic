@@ -1,6 +1,9 @@
 package petclinic.models
 
+import io.getquill.MappedEncoding
 import zio.{Random, ZIO}
+import zio.json._
+
 import java.util.UUID
 
 // wraps UUID as a specific PetId so that we cannot use an incorrect UUID
@@ -8,6 +11,8 @@ final case class PetId(id: UUID) extends AnyVal
 
 object PetId {
   def random: ZIO[Random, Nothing, PetId] = Random.nextUUID.map(PetId(_))
+
+  implicit val codec: JsonCodec[PetId] = JsonCodec[UUID].transform(PetId(_), _.id)
 }
 
 // extracts species to limit user selection
@@ -33,6 +38,18 @@ object Species {
     override def name: String = "Reptile"
   }
 
+  implicit val encodeSpecies: MappedEncoding[Species, String] = MappedEncoding[Species, String](_.toString)
+  implicit val decodeSpecies: MappedEncoding[String, Species] = MappedEncoding[String, Species](Species.fromString)
+
+  def fromString(s: String): Species = s match {
+    case "Feline"  => Feline
+    case "Canine"  => Canine
+    case "Avia"    => Avia
+    case "Reptile" => Reptile
+  }
+
+  implicit val codec: JsonCodec[Species] = DeriveJsonCodec.gen[Species]
+
 }
 
 // represents a pet
@@ -47,5 +64,7 @@ object Pet {
       ownerId: OwnerId
   ): ZIO[Random, Nothing, Pet] =
     PetId.random.map(Pet(_, name, birthdate, species, ownerId))
+
+  implicit val codec: JsonCodec[Pet] = DeriveJsonCodec.gen[Pet]
 
 }
