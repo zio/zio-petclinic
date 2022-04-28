@@ -98,3 +98,9 @@ final case class PetServiceLive(random: Random, dataSource: DataSource) extends 
       .unit
 
 }
+
+object PetServiceLive {
+
+  val layer: URLayer[Random with DataSource, PetService] = (PetServiceLive.apply _).toLayer[PetService]
+
+}

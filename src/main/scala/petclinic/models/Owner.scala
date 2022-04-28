@@ -10,14 +10,14 @@ final case class OwnerId(id: UUID) extends AnyVal
 
 object OwnerId {
 
+  def random: ZIO[Random, Nothing, OwnerId] = Random.nextUUID.map(OwnerId(_))
+
+  implicit val codec: JsonCodec[OwnerId] = JsonCodec[UUID].transform(OwnerId(_), _.id)
+
   def fromString(id: String): Task[OwnerId] =
     ZIO.attempt {
       OwnerId(UUID.fromString(id))
     }
-
-  def random: ZIO[Random, Nothing, OwnerId] = Random.nextUUID.map(OwnerId(_))
-
-  implicit val codec: JsonCodec[OwnerId] = JsonCodec[UUID].transform(OwnerId(_), _.id)
 }
 
 // represents an owner of a pet
