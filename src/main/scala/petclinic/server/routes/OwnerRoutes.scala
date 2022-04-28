@@ -33,20 +33,17 @@ object OwnerRoutes {
   val routes: Http[OwnerService, Throwable, Request, Response] =
     Http.collectZIO[Request] {
 
-      // get an owner
       case Method.GET -> !! / "owners" / id =>
         for {
           id    <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
           owner <- OwnerService.get(id)
         } yield Response.json(owner.toJson)
 
-      // get all owners
       case Method.GET -> !! / "owners" =>
         OwnerService.getAll.map { owners =>
           Response.json(owners.toJson)
         }
 
-      // create owner
       case req @ Method.POST -> !! / "owners" =>
         for {
           body        <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
@@ -55,7 +52,6 @@ object OwnerRoutes {
             OwnerService.create(createOwner.firstName, createOwner.lastName, createOwner.address, createOwner.phone)
         } yield Response.json(owner.toJson)
 
-      // update owner
       case req @ Method.POST -> !! / "owners" =>
         for {
           body        <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
@@ -69,7 +65,6 @@ object OwnerRoutes {
                )
         } yield Response.ok
 
-      // delete owner
       case req @ Method.DELETE -> !! / "owners" / id =>
         for {
           id    <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))

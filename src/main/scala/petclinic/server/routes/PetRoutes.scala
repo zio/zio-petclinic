@@ -11,6 +11,7 @@ object PetRoutes {
   final case class CreatePet(name: String, birthdate: java.time.LocalDate, species: Species, ownerId: OwnerId)
 
   object CreatePet {
+
     implicit val codec: JsonCodec[CreatePet] = DeriveJsonCodec.gen[CreatePet]
   }
 
@@ -29,18 +30,16 @@ object PetRoutes {
   }
 
   val routes: Http[PetService, Throwable, Request, Response] = Http.collectZIO[Request] {
-    // get a pet
+
     case Method.GET -> !! / "pets" / id =>
       for {
         id  <- PetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
         pet <- PetService.get(id)
       } yield Response.json(pet.toJson)
 
-    // get all pets
     case Method.GET -> !! / "pets" =>
       PetService.getAll.map(pets => Response.json(pets.toJson))
 
-    // create pet
     case req @ Method.POST -> !! / "pets" =>
       for {
         body      <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
@@ -48,7 +47,6 @@ object PetRoutes {
         pet       <- PetService.create(createPet.name, createPet.birthdate, createPet.species, createPet.ownerId)
       } yield Response.json(pet.toJson)
 
-    // update pet
     case req @ Method.POST -> !! / "pets" =>
       for {
         body      <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
@@ -56,7 +54,6 @@ object PetRoutes {
         _         <- PetService.update(updatePet.id, updatePet.name, updatePet.birthdate, updatePet.species, updatePet.ownerId)
       } yield Response.ok
 
-    // delete pet
     case req @ Method.DELETE -> !! / "pets" / id =>
       for {
         id <- PetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))

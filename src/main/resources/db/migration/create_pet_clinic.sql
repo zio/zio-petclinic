@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS vet {
      specialty test NOT NULL
  };
 
- CREATE TABLE IF NOT EXISTS appt {
+ CREATE TABLE IF NOT EXISTS appointment {
      id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
      date date NOT NULL,
      description text NOT NULL,
