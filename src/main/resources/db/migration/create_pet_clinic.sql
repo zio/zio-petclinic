@@ -16,18 +16,27 @@ CREATE TABLE IF NOT EXISTS pet (
     owner_id uuid NOT NULL REFERENCES owner(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS vet {
-    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    first_name text NOT NULL,
+CREATE TABLE IF NOT EXISTS vet
+(
+    id        uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     last_name text NOT NULL,
-    specialty test NOT NULL
-};
+    specialty text NOT NULL
+);
 
--- Vet data for display list
-INSERT INTO vet (first_name, last_name, specialty) VALUES ('Dr.', 'Baloo', 'Cardiology');
-INSERT INTO vet (first_name, last_name, specialty) VALUES ('Dr.', 'Hedwig', 'Oncology');
-INSERT INTO vet (first_name, last_name, specialty) VALUES ('Dr.', 'Totoro', 'Large Animal Internal Medicine');
-INSERT INTO vet (first_name, last_name, specialty) VALUES ('Dr.', 'Rajah', 'Dentistry');
-INSERT INTO vet (first_name, last_name, specialty) VALUES ('Dr.', 'Sid', 'Neurology');
-INSERT INTO vet (first_name, last_name, specialty) VALUES ('Dr.', 'Stuart', 'Small Animal Internal Medicine');
+ CREATE TABLE IF NOT EXISTS appointment
+ (
+     id          uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+     date        date NOT NULL,
+     description text NOT NULL,
+     vet_id      uuid NOT NULL REFERENCES vet (id) ON DELETE CASCADE,
+     pet_id      uuid NOT NULL REFERENCES pet (id) ON DELETE CASCADE
+ );
 
+
+ -- Vet data for display list
+ INSERT INTO vet (last_name, specialty) VALUES ('Dr. Baloo', 'Cardiology');
+ INSERT INTO vet (last_name, specialty) VALUES ('Dr. Hedwig', 'Oncology');
+ INSERT INTO vet (last_name, specialty) VALUES ('Dr. Totoro', 'Large Animal Internal Medicine');
+ INSERT INTO vet (last_name, specialty) VALUES ('Dr. Rajah', 'Dentistry');
+ INSERT INTO vet (last_name, specialty) VALUES ('Dr. Sid', 'Neurology');
+ INSERT INTO vet (last_name, specialty) VALUES ('Dr. Stuart', 'Small Animal Internal Medicine');

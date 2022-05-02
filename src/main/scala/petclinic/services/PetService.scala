@@ -1,17 +1,21 @@
 package petclinic.services
 
-import petclinic.QuillContext
 import petclinic.models.{OwnerId, Pet, PetId, Species}
-import zio._
+import zio.{Random, Task, URLayer, ZIO}
+import petclinic.QuillContext
 
 import javax.sql.DataSource
 
 trait PetService {
 
   def create(name: String, birthdate: java.time.LocalDate, species: Species, ownerId: OwnerId): Task[Pet]
+
   def delete(id: PetId): Task[Unit]
+
   def get(id: PetId): Task[Option[Pet]]
+
   def getAll: Task[List[Pet]]
+
   def update(
       id: PetId,
       name: Option[String],

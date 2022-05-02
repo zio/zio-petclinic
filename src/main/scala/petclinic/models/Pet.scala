@@ -6,21 +6,19 @@ import zio.json._
 
 import java.util.UUID
 
-// wraps UUID as a specific PetId so that we cannot use an incorrect UUID
 final case class PetId(id: UUID) extends AnyVal
 
 object PetId {
   def random: ZIO[Random, Nothing, PetId] = Random.nextUUID.map(PetId(_))
 
-  implicit val codec: JsonCodec[PetId] = JsonCodec[UUID].transform(PetId(_), _.id)
-
   def fromString(id: String): Task[PetId] =
     ZIO.attempt {
       PetId(UUID.fromString(id))
     }
+
+  implicit val codec: JsonCodec[PetId] = JsonCodec[UUID].transform(PetId(_), _.id)
 }
 
-// extracts species to limit user selection
 sealed trait Species {
   def name: String
 }
@@ -57,7 +55,6 @@ object Species {
 
 }
 
-// represents a pet
 final case class Pet(id: PetId, name: String, birthdate: java.time.LocalDate, species: Species, ownerId: OwnerId)
 
 object Pet {

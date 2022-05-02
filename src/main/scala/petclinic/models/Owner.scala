@@ -1,26 +1,24 @@
 package petclinic.models
 
-import zio._
+import zio.{Random, Task, ZIO}
 import zio.json._
 
 import java.util.UUID
 
-// wraps UUID as a specific OwnerId so that we cannot use an incorrect UUID
 final case class OwnerId(id: UUID) extends AnyVal
 
 object OwnerId {
 
   def random: ZIO[Random, Nothing, OwnerId] = Random.nextUUID.map(OwnerId(_))
 
-  implicit val codec: JsonCodec[OwnerId] = JsonCodec[UUID].transform(OwnerId(_), _.id)
-
   def fromString(id: String): Task[OwnerId] =
     ZIO.attempt {
       OwnerId(UUID.fromString(id))
     }
+
+  implicit val codec: JsonCodec[OwnerId] = JsonCodec[UUID].transform(OwnerId(_), _.id)
 }
 
-// represents an owner of a pet
 final case class Owner(id: OwnerId, firstName: String, lastName: String, address: String, phone: String)
 
 object Owner {
