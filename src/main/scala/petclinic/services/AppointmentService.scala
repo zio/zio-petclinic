@@ -8,7 +8,7 @@ import javax.sql.DataSource
 
 trait AppointmentService {
 
-  def create(petId: PetId, date: java.time.LocalDateTime, description: String, vetId: VetId): Task[Appointment]
+  def create(petId: PetId, date: java.time.LocalDateTime, description: String): Task[Appointment]
 
   def delete(id: AppointmentId): Task[Unit]
 
@@ -25,10 +25,9 @@ object AppointmentService {
   def create(
       petId: PetId,
       date: java.time.LocalDateTime,
-      description: String,
-      vetId: VetId
+      description: String
   ): ZIO[AppointmentService, Throwable, Appointment] =
-    ZIO.serviceWithZIO[AppointmentService](_.create(petId, date, description, vetId))
+    ZIO.serviceWithZIO[AppointmentService](_.create(petId, date, description))
 
   def delete(id: AppointmentId): ZIO[AppointmentService, Throwable, Unit] =
     ZIO.serviceWithZIO[AppointmentService](_.delete(id))
@@ -47,32 +46,43 @@ object AppointmentService {
 
 }
 
-final case class AppointmentServiceLive(random: Random, dataSource: DataSource) extends AppointmentService {
+final case class AppointmentServiceLive(random: Random, dataSource: DataSource, vetService: VetService)
+    extends AppointmentService {
 
   import QuillContext._
 
-  def create(petId: PetId, date: java.time.LocalDateTime, description: String, vetId: VetId): Task[Appointment] =
+  override def create(
+      petId: PetId,
+      date: java.time.LocalDateTime,
+      description: String
+  ): Task[Appointment] =
     for {
-      appt <- Appointment.apply(petId, date, description, vetId).provideService(random)
-      _    <- run(query[Appointment].insertValue(lift(appt))).provideService(dataSource)
-    } yield appt
+      vets        <- vetService.getAll
+      id           = vets(scala.util.Random.nextInt(vets.length)).id
+      appointment <- Appointment.apply(petId, date, description, id).provideService(random)
+      _           <- run(query[Appointment].insertValue(lift(appointment))).provideService(dataSource)
+    } yield appointment
 
-  def delete(id: AppointmentId): Task[Unit] =
+  override def delete(id: AppointmentId): Task[Unit] =
     run(query[Appointment].filter(_.id == lift(id)).delete)
       .provideService(dataSource)
       .unit
 
-  def get(id: AppointmentId): Task[Option[Appointment]] =
+  override def get(id: AppointmentId): Task[Option[Appointment]] =
     run(query[Appointment].filter(_.id == lift(id)))
       .provideService(dataSource)
       .map(_.headOption)
 
-  def getAll: Task[List[Appointment]] =
+  override def getAll: Task[List[Appointment]] =
     run(query[Appointment])
       .provideService(dataSource)
       .map(_.toList)
 
-  def update(id: AppointmentId, date: Option[java.time.LocalDateTime], description: Option[String]): Task[Unit] =
+  override def update(
+      id: AppointmentId,
+      date: Option[java.time.LocalDateTime],
+      description: Option[String]
+  ): Task[Unit] =
     run(
       dynamicQuery[Appointment]
         .filter(_.id == lift(id))
@@ -85,7 +95,7 @@ final case class AppointmentServiceLive(random: Random, dataSource: DataSource) 
 
 object AppointmentServiceLive {
 
-  val layer: URLayer[Random with DataSource, AppointmentService] =
+  val layer: URLayer[Random with DataSource with VetService, AppointmentService] =
     (AppointmentServiceLive.apply _).toLayer[AppointmentService]
 
 }

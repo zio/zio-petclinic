@@ -8,7 +8,7 @@ import zio.json._
 
 object AppointmentRoutes {
 
-  final case class CreateAppointment(petId: PetId, date: java.time.LocalDateTime, description: String, vetId: VetId)
+  final case class CreateAppointment(petId: PetId, date: java.time.LocalDateTime, description: String)
 
   object CreateAppointment {
 
@@ -42,7 +42,7 @@ object AppointmentRoutes {
         for {
           body       <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
           createAppt <- ZIO.from(body.fromJson[CreateAppointment]).mapError(AppError.JsonDecodingError)
-          appt       <- AppointmentService.create(createAppt.petId, createAppt.date, createAppt.description, createAppt.vetId)
+          appt       <- AppointmentService.create(createAppt.petId, createAppt.date, createAppt.description)
         } yield Response.json(appt.toJson)
 
       case req @ Method.POST -> !! / "appt" =>

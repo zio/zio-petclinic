@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS vet
  CREATE TABLE IF NOT EXISTS appointment
  (
      id          uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-     date        date NOT NULL,
+     date        timestamp NOT NULL,
      description text NOT NULL,
      vet_id      uuid NOT NULL REFERENCES vet (id) ON DELETE CASCADE,
      pet_id      uuid NOT NULL REFERENCES pet (id) ON DELETE CASCADE
