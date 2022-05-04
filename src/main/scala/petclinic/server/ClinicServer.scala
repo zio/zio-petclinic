@@ -1,6 +1,6 @@
 package petclinic.server
 
-import petclinic.QuillContext
+import petclinic.{Migrations, QuillContext}
 import petclinic.services._
 import zhttp.service.Server
 import zhttp.http._
@@ -18,14 +18,18 @@ object ClinicServer extends ZIOAppDefault {
     }
   }
 
-  override val run: ZIO[Any, Throwable, Nothing] =
-    Server
-      .start(8080, handledApp)
-      .provide(
-        Random.live,
-        QuillContext.dataSourceLayer,
-        OwnerServiceLive.layer,
-        PetServiceLive.layer,
-        AppointmentServiceLive.layer
-      )
+  override val run: ZIO[Any, Throwable, Unit] = {
+    for {
+      _ <- Migrations.migrate
+      _ <- Server.start(8080, handledApp)
+    } yield ()
+  }
+    .provide(
+      Random.live,
+      QuillContext.dataSourceLayer,
+      OwnerServiceLive.layer,
+      PetServiceLive.layer,
+      AppointmentServiceLive.layer
+    )
+
 }

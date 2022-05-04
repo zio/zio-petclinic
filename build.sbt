@@ -23,9 +23,9 @@ lazy val root = (project in file("."))
       "io.getquill"           %% "quill-jdbc-zio"                    % zioQuillVersion,
       "org.postgresql"         % "postgresql"                        % postgresVersion,
       "io.github.scottweaver" %% "zio-2-0-testcontainers-postgresql" % zioTestContainersVersion,
-      "io.github.scottweaver" %% "zio-2-0-db-migration-aspect"       % zioTestContainersVersion
+      "io.github.scottweaver" %% "zio-2-0-db-migration-aspect"       % zioTestContainersVersion,
+      "org.flywaydb"           % "flyway-core"                       % "8.5.10"
     ),
     Test / fork := true,
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
-
