@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS owner (
     first_name text NOT NULL,
     last_name text NOT NULL,
     address text NOT NULL,
-    phone_number text NOT NULL
+    phone text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS pet (
