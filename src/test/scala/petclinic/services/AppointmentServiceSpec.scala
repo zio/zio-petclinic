@@ -16,7 +16,7 @@ object AppointmentServiceSpec extends DefaultRunnableSpec {
           for {
             owner <- OwnerService.create("Emily", "Elizabeth", "1 Birdwell Island, New York, NY", "212-215-1928")
             pet <-
-              PetService.create("Clifford", LocalDate.of(1962, 2, 14), Species.fromString("Canine"), owner.id)
+              PetService.create("Clifford", LocalDate.of(1962, 2, 14), Species.Canine, owner.id)
             appointment <- AppointmentService.create(
                              pet.id,
                              LocalDateTime.of(2022, 6, 12, 13, 0),
@@ -29,7 +29,7 @@ object AppointmentServiceSpec extends DefaultRunnableSpec {
           for {
             owner <- OwnerService.create("Jon", "Arbuckle", "711 Maple St, Muncie, IN", "812-728-1945")
             pet <-
-              PetService.create("Garfield", LocalDate.of(1978, 6, 19), Species.fromString("Feline"), owner.id)
+              PetService.create("Garfield", LocalDate.of(1978, 6, 19), Species.Feline, owner.id)
             appointment1 <-
               AppointmentService.create(pet.id, LocalDateTime.of(2022, 7, 1, 9, 0), "Lasagna allergy test")
             appointment2 <-
@@ -44,7 +44,7 @@ object AppointmentServiceSpec extends DefaultRunnableSpec {
             owner <-
               OwnerService.create("Sherlock", "Holmes", "221B Baker St, London, England, UK", "+44-20-7224-3688")
             pet <-
-              PetService.create("Toby", LocalDate.of(1888, 4, 17), Species.fromString("Canine"), owner.id)
+              PetService.create("Toby", LocalDate.of(1888, 4, 17), Species.Canine, owner.id)
             appointment <-
               AppointmentService.create(
                 pet.id,
@@ -59,7 +59,7 @@ object AppointmentServiceSpec extends DefaultRunnableSpec {
           for {
             owner <- OwnerService.create("Peter", "Hunter", "Ontario, Canada", "807-511-1918")
             pet <-
-              PetService.create("Bodger", LocalDate.of(1963, 11, 20), Species.fromString("Canine"), owner.id)
+              PetService.create("Bodger", LocalDate.of(1963, 11, 20), Species.Canine, owner.id)
             appointment1 <-
               AppointmentService.create(pet.id, LocalDateTime.of(2022, 5, 22, 9, 0), "Immunization")
             appointment2 <-
@@ -80,7 +80,7 @@ object AppointmentServiceSpec extends DefaultRunnableSpec {
             owner <-
               OwnerService.create("Harry", "Potter", "4 Privet Drive, Little Whinging, Surrey, UK", "+44-20-7224-3688")
             pet <-
-              PetService.create("Snowy Owl", LocalDate.of(1991, 1, 1), Species.fromString("Avia"), owner.id)
+              PetService.create("Snowy Owl", LocalDate.of(1991, 1, 1), Species.Avia, owner.id)
             appointment <-
               AppointmentService.create(
                 pet.id,
