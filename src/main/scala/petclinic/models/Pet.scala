@@ -41,6 +41,10 @@ object Species {
     override def name: String = "Reptile"
   }
 
+  case object Suidae extends Species {
+    override def name: String = "Suidae"
+  }
+
   implicit val encodeSpecies: MappedEncoding[Species, String] = MappedEncoding[Species, String](_.toString)
   implicit val decodeSpecies: MappedEncoding[String, Species] = MappedEncoding[String, Species](Species.fromString)
 
@@ -49,6 +53,7 @@ object Species {
     case "Canine"  => Canine
     case "Avia"    => Avia
     case "Reptile" => Reptile
+    case "Suidae"  => Suidae
   }
 
   implicit val codec: JsonCodec[Species] = DeriveJsonCodec.gen[Species]

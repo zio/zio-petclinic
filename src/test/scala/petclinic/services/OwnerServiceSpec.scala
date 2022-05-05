@@ -22,7 +22,7 @@ object OwnerServiceSpec extends DefaultRunnableSpec {
             createOwner1 <- create("Fern", "Arable", "Arable Farm, Brooklin, ME", "207-711-1899")
             createOwner2 <- create("Jon", "Arbuckle", "711 Maple St, Muncie, IN", "812-728-1945")
             owners       <- getAll
-          } yield assertTrue(owners.contains(createOwner1) && owners.contains(createOwner2) && owners.size == 2)
+          } yield assertTrue(owners.contains(createOwner1) && owners.contains(createOwner2))
         }
       ),
       suite("deleted owners do not exist in db")(
@@ -34,7 +34,7 @@ object OwnerServiceSpec extends DefaultRunnableSpec {
             owner <- get(createOwner.id)
           } yield assertTrue(owner.isEmpty)
         },
-        test("returns false confirming non-existence of many deleted owners") {
+        test("returns true confirming non-existence of many deleted owners") {
           for {
             createOwner1 <- create("Elizabeth", "Hunter", "Ontario, Canada", "807-511-1918")
             createOwner2 <- create("Peter", "Hunter", "Ontario, Canada", "807-511-1918")
