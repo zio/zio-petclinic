@@ -7,8 +7,6 @@ import zio.ZLayer
 import javax.sql.DataSource
 
 object QuillContext extends PostgresZioJdbcContext(SnakeCase) {
-  val dataSourceLayer: ZLayer[Any, Throwable, DataSource] =
-    DataSourceLayer.fromPrefix("database")
+  val dataSourceLayer: ZLayer[Any, Nothing, DataSource] =
+    DataSourceLayer.fromPrefix("database").orDie
 }
-
-
