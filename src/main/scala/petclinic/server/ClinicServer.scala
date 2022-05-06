@@ -29,6 +29,7 @@ object ClinicServer extends ZIOAppDefault {
       QuillContext.dataSourceLayer,
       OwnerServiceLive.layer,
       PetServiceLive.layer,
+      VetServiceLive.layer,
       AppointmentServiceLive.layer
     )
 

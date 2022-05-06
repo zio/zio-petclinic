@@ -1,7 +1,7 @@
 package petclinic.services
 
 import petclinic.models.{Appointment, AppointmentId, PetId, VetId}
-import zio.{Random, Task, URLayer, ZIO}
+import zio.{Random, Task, URLayer, ZEnvironment, ZIO, ZLayer}
 import petclinic.QuillContext
 
 import javax.sql.DataSource
@@ -46,8 +46,7 @@ object AppointmentService {
 
 }
 
-final case class AppointmentServiceLive(random: Random, dataSource: DataSource, vetService: VetService)
-    extends AppointmentService {
+final case class AppointmentServiceLive(dataSource: DataSource, vetService: VetService) extends AppointmentService {
 
   import QuillContext._
 
@@ -59,23 +58,23 @@ final case class AppointmentServiceLive(random: Random, dataSource: DataSource, 
     for {
       vets        <- vetService.getAll
       id           = vets(scala.util.Random.nextInt(vets.length)).id
-      appointment <- Appointment.apply(petId, date, description, id).provideService(random)
-      _           <- run(query[Appointment].insertValue(lift(appointment))).provideService(dataSource)
+      appointment <- Appointment.apply(petId, date, description, id)
+      _           <- run(query[Appointment].insertValue(lift(appointment))).provideEnvironment(ZEnvironment(dataSource))
     } yield appointment
 
   override def delete(id: AppointmentId): Task[Unit] =
     run(query[Appointment].filter(_.id == lift(id)).delete)
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .unit
 
   override def get(id: AppointmentId): Task[Option[Appointment]] =
     run(query[Appointment].filter(_.id == lift(id)))
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .map(_.headOption)
 
   override def getAll: Task[List[Appointment]] =
     run(query[Appointment])
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .map(_.toList)
 
   override def update(
@@ -88,14 +87,14 @@ final case class AppointmentServiceLive(random: Random, dataSource: DataSource, 
         .filter(_.id == lift(id))
         .update(setOpt(_.date, date), setOpt(_.description, description))
     )
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .unit
 
 }
 
 object AppointmentServiceLive {
 
-  val layer: URLayer[Random with DataSource with VetService, AppointmentService] =
-    (AppointmentServiceLive.apply _).toLayer[AppointmentService]
+  val layer: URLayer[DataSource with VetService, AppointmentService] =
+    ZLayer.fromFunction(AppointmentServiceLive.apply _)
 
 }

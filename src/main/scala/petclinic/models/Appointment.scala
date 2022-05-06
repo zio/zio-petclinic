@@ -1,6 +1,6 @@
 package petclinic.models
 
-import zio.{Random, Task, ZIO}
+import zio.{Random, Task, UIO, ZIO}
 import zio.json._
 
 import java.util.UUID
@@ -9,7 +9,7 @@ final case class AppointmentId(id: UUID) extends AnyVal
 
 object AppointmentId {
 
-  def random: ZIO[Random, Nothing, AppointmentId] = Random.nextUUID.map(AppointmentId(_))
+  def random: UIO[AppointmentId] = Random.nextUUID.map(AppointmentId(_))
 
   def fromString(id: String): Task[AppointmentId] = ZIO.attempt(AppointmentId(UUID.fromString(id)))
 
@@ -32,7 +32,7 @@ object Appointment {
       date: java.time.LocalDateTime,
       description: String,
       vetId: VetId
-  ): ZIO[Random, Nothing, Appointment] =
+  ): UIO[Appointment] =
     AppointmentId.random.map(id => Appointment(id, petId, date, description, vetId))
 
   implicit val codec: JsonCodec[Appointment] = DeriveJsonCodec.gen[Appointment]

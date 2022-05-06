@@ -4,11 +4,11 @@ import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
 import zio.test._
 
-object OwnerServiceSpec extends DefaultRunnableSpec {
+object OwnerServiceSpec extends ZIOSpecDefault {
 
   import OwnerService._
 
-  override def spec: Spec[TestEnvironment, TestFailure[Throwable], TestSuccess] = {
+  override def spec: Spec[TestEnvironment, Throwable] = {
     suite("OwnerService")(
       suite("added owners exist in db")(
         test("returns true confirming existence of added owner") {
@@ -60,7 +60,7 @@ object OwnerServiceSpec extends DefaultRunnableSpec {
       )
     ) @@ DbMigrationAspect.migrate()()
   }
-    .provideCustomShared(
+    .provideShared(
       OwnerServiceLive.layer,
       ZPostgreSQLContainer.Settings.default,
       ZPostgreSQLContainer.live,

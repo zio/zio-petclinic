@@ -7,9 +7,9 @@ import zio.test._
 
 import java.time.LocalDate
 
-object PetServiceSpec extends DefaultRunnableSpec {
+object PetServiceSpec extends ZIOSpecDefault {
 
-  override def spec: Spec[TestEnvironment, TestFailure[Throwable], TestSuccess] = {
+  override def spec: Spec[TestEnvironment, Throwable] = {
     suite("PetService")(
       suite("added pets exist in db")(
         test("returns true confirming existence of added pet") {
@@ -75,7 +75,7 @@ object PetServiceSpec extends DefaultRunnableSpec {
         }
       )
     ) @@ DbMigrationAspect.migrate()()
-  }.provideCustomShared(
+  }.provideShared(
     PetServiceLive.layer,
     OwnerServiceLive.layer,
     ZPostgreSQLContainer.Settings.default,
