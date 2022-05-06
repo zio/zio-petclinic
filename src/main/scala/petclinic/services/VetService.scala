@@ -1,7 +1,7 @@
 package petclinic.services
 
 import petclinic.models.Vet
-import zio.{Function1ToLayerOps, Task, URLayer, ZIO}
+import zio._
 
 import javax.sql.DataSource
 import petclinic.QuillContext
@@ -21,11 +21,11 @@ final case class VetServiceLive(dataSource: DataSource) extends VetService {
 
   override def getAll: Task[List[Vet]] =
     run(query[Vet])
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .map(_.toList)
 }
 
 object VetServiceLive {
   val layer: URLayer[DataSource, VetService] =
-    (VetServiceLive.apply _).toLayer[VetService]
+    ZLayer.fromFunction(VetServiceLive.apply _)
 }

@@ -1,7 +1,7 @@
 package petclinic.services
 
 import petclinic.models.{OwnerId, Pet, PetId, Species}
-import zio.{Random, Task, URLayer, ZIO}
+import zio.{Random, Task, URLayer, ZEnvironment, ZIO, ZLayer}
 import petclinic.QuillContext
 
 import javax.sql.DataSource
@@ -56,29 +56,29 @@ object PetService {
 
 }
 
-final case class PetServiceLive(random: Random, dataSource: DataSource) extends PetService {
+final case class PetServiceLive(dataSource: DataSource) extends PetService {
 
   import QuillContext._
 
   override def create(name: String, birthdate: java.time.LocalDate, species: Species, ownerId: OwnerId): Task[Pet] =
     for {
-      pet <- Pet.apply(name, birthdate, species, ownerId).provideService(random)
-      _   <- run(query[Pet].insertValue(lift(pet))).provideService(dataSource)
+      pet <- Pet.apply(name, birthdate, species, ownerId)
+      _   <- run(query[Pet].insertValue(lift(pet))).provideEnvironment(ZEnvironment(dataSource))
     } yield pet
 
   override def delete(id: PetId): Task[Unit] =
     run(query[Pet].filter(_.id == lift(id)).delete)
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .unit
 
   override def get(id: PetId): Task[Option[Pet]] =
     run(query[Pet].filter(_.id == lift(id)))
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .map(_.headOption)
 
   override def getAll: Task[List[Pet]] =
     run(query[Pet])
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .map(_.toList)
 
   override def update(
@@ -98,13 +98,13 @@ final case class PetServiceLive(random: Random, dataSource: DataSource) extends 
           setOpt(_.ownerId, ownerId)
         )
     )
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .unit
 
 }
 
 object PetServiceLive {
 
-  val layer: URLayer[Random with DataSource, PetService] = (PetServiceLive.apply _).toLayer[PetService]
+  val layer: URLayer[DataSource, PetService] = ZLayer.fromFunction(PetServiceLive.apply _)
 
 }

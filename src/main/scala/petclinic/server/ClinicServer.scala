@@ -12,9 +12,9 @@ object ClinicServer extends ZIOAppDefault {
     import routes._
     (OwnerRoutes.routes ++ PetRoutes.routes ++ AppointmentRoutes.routes).catchAll {
       case AppError.MissingBodyError =>
-        Http.text("MISSING BODY").setStatus(Status.BAD_REQUEST)
+        Http.text("MISSING BODY").setStatus(Status.BadRequest)
       case AppError.JsonDecodingError(message) =>
-        Http.text(s"JSON DECODING ERROR: $message").setStatus(Status.BAD_REQUEST)
+        Http.text(s"JSON DECODING ERROR: $message").setStatus(Status.BadRequest)
     }
   }
 
@@ -25,10 +25,10 @@ object ClinicServer extends ZIOAppDefault {
     } yield ()
   }
     .provide(
-      Random.live,
       QuillContext.dataSourceLayer,
       OwnerServiceLive.layer,
       PetServiceLive.layer,
+      VetServiceLive.layer,
       AppointmentServiceLive.layer
     )
 

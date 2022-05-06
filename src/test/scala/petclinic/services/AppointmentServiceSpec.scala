@@ -7,9 +7,9 @@ import zio.test._
 
 import java.time.{LocalDate, LocalDateTime}
 
-object AppointmentServiceSpec extends DefaultRunnableSpec {
+object AppointmentServiceSpec extends ZIOSpecDefault {
 
-  override def spec: Spec[TestEnvironment, TestFailure[Throwable], TestSuccess] = {
+  override def spec: Spec[TestEnvironment, Throwable] = {
     suite("AppointmentService")(
       suite("added appointments exist in db")(
         test("returns true confirming existence of added appointment") {
@@ -93,7 +93,7 @@ object AppointmentServiceSpec extends DefaultRunnableSpec {
         }
       )
     ) @@ DbMigrationAspect.migrate()()
-  }.provideCustomShared(
+  }.provideShared(
     PetServiceLive.layer,
     OwnerServiceLive.layer,
     ZPostgreSQLContainer.Settings.default,

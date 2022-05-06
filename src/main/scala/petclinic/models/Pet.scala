@@ -1,7 +1,7 @@
 package petclinic.models
 
 import io.getquill.MappedEncoding
-import zio.{Random, Task, ZIO}
+import zio.{Random, Task, UIO, ZIO}
 import zio.json._
 
 import java.util.UUID
@@ -9,7 +9,7 @@ import java.util.UUID
 final case class PetId(id: UUID) extends AnyVal
 
 object PetId {
-  def random: ZIO[Random, Nothing, PetId] = Random.nextUUID.map(PetId(_))
+  def random: UIO[PetId] = Random.nextUUID.map(PetId(_))
 
   def fromString(id: String): Task[PetId] =
     ZIO.attempt {
@@ -69,7 +69,7 @@ object Pet {
       birthdate: java.time.LocalDate,
       species: Species,
       ownerId: OwnerId
-  ): ZIO[Random, Nothing, Pet] =
+  ): UIO[Pet] =
     PetId.random.map(Pet(_, name, birthdate, species, ownerId))
 
   implicit val codec: JsonCodec[Pet] = DeriveJsonCodec.gen[Pet]

@@ -1,7 +1,7 @@
 package petclinic.services
 
 import petclinic.models.{Owner, OwnerId}
-import zio.{Random, Task, URLayer, ZIO}
+import zio.{Random, Task, URLayer, ZEnvironment, ZIO, ZLayer}
 import petclinic.QuillContext
 
 import javax.sql.DataSource
@@ -47,29 +47,29 @@ object OwnerService {
 
 }
 
-final case class OwnerServiceLive(random: Random, dataSource: DataSource) extends OwnerService {
+final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
 
   import QuillContext._
 
   override def create(firstName: String, lastName: String, address: String, phone: String): Task[Owner] =
     for {
-      owner <- Owner.apply(firstName, lastName, address, phone).provideService(random)
-      _     <- run(query[Owner].insertValue(lift(owner))).provideService(dataSource)
+      owner <- Owner.apply(firstName, lastName, address, phone)
+      _     <- run(query[Owner].insertValue(lift(owner))).provideEnvironment(ZEnvironment(dataSource))
     } yield owner
 
   override def delete(id: OwnerId): Task[Unit] =
     run(query[Owner].filter(_.id == lift(id)).delete)
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .unit
 
   override def get(id: OwnerId): Task[Option[Owner]] =
     run(query[Owner].filter(_.id == lift(id)))
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .map(_.headOption)
 
   override def getAll: Task[List[Owner]] =
     run(query[Owner])
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .map(_.toList)
 
   override def update(
@@ -89,11 +89,11 @@ final case class OwnerServiceLive(random: Random, dataSource: DataSource) extend
           setOpt(_.phone, phone)
         )
     )
-      .provideService(dataSource)
+      .provideEnvironment(ZEnvironment(dataSource))
       .unit
 
 }
 
 object OwnerServiceLive {
-  val layer: URLayer[Random with DataSource, OwnerService] = (OwnerServiceLive.apply _).toLayer[OwnerService]
+  val layer: URLayer[DataSource, OwnerService] = ZLayer.fromFunction(OwnerServiceLive.apply _)
 }
