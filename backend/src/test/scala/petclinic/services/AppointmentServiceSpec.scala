@@ -2,8 +2,8 @@ package petclinic.services
 
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
-import petclinic.models.Species
 import zio.test._
+import petclinic.models._
 
 import java.time.{LocalDate, LocalDateTime}
 

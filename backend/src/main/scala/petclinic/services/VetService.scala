@@ -1,10 +1,10 @@
 package petclinic.services
 
-import petclinic.models.Vet
 import zio._
 
 import javax.sql.DataSource
 import petclinic.QuillContext
+import petclinic.models._
 
 trait VetService {
   def getAll: Task[List[Vet]]

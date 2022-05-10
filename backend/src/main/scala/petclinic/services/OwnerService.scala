@@ -1,8 +1,8 @@
 package petclinic.services
 
-import petclinic.models.{Owner, OwnerId}
-import zio.{Random, Task, URLayer, ZEnvironment, ZIO, ZLayer}
+import zio.{Task, URLayer, ZEnvironment, ZIO, ZLayer}
 import petclinic.QuillContext
+import petclinic.models._
 
 import javax.sql.DataSource
 
