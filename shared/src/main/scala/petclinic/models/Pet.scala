@@ -1,8 +1,7 @@
 package petclinic.models
 
-import io.getquill.MappedEncoding
-import zio.{Random, Task, UIO, ZIO}
 import zio.json._
+import zio.{Random, Task, UIO, ZIO}
 
 import java.util.UUID
 
@@ -44,9 +43,6 @@ object Species {
   case object Suidae extends Species {
     override def name: String = "Suidae"
   }
-
-  implicit val encodeSpecies: MappedEncoding[Species, String] = MappedEncoding[Species, String](_.toString)
-  implicit val decodeSpecies: MappedEncoding[String, Species] = MappedEncoding[String, Species](Species.fromString)
 
   def fromString(s: String): Species = s match {
     case "Feline"  => Feline

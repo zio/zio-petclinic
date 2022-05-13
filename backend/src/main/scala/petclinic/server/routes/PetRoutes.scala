@@ -1,10 +1,10 @@
 package petclinic.server.routes
 
-import petclinic.models.{OwnerId, PetId, Species}
 import petclinic.services.PetService
 import zhttp.http._
 import zio.ZIO
 import zio.json._
+import petclinic.models._
 
 object PetRoutes {
 

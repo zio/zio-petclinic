@@ -1,8 +1,8 @@
 package petclinic.services
 
-import petclinic.models.{OwnerId, Pet, PetId, Species}
-import zio.{Random, Task, URLayer, ZEnvironment, ZIO, ZLayer}
+import zio.{Task, URLayer, ZEnvironment, ZIO, ZLayer}
 import petclinic.QuillContext
+import petclinic.models._
 
 import javax.sql.DataSource
 
@@ -59,6 +59,9 @@ object PetService {
 final case class PetServiceLive(dataSource: DataSource) extends PetService {
 
   import QuillContext._
+
+  implicit val encodeSpecies: MappedEncoding[Species, String] = MappedEncoding[Species, String](_.toString)
+  implicit val decodeSpecies: MappedEncoding[String, Species] = MappedEncoding[String, Species](Species.fromString)
 
   override def create(name: String, birthdate: java.time.LocalDate, species: Species, ownerId: OwnerId): Task[Pet] =
     for {

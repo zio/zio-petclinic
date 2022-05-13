@@ -1,7 +1,7 @@
 package petclinic.models
 
-import zio.{Random, Task, UIO, ZIO}
 import zio.json._
+import zio.{Random, Task, UIO, ZIO}
 
 import java.util.UUID
 
