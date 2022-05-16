@@ -9,12 +9,18 @@ import java.time.{LocalDate, LocalDateTime}
 
 object AppointmentServiceSpec extends ZIOSpecDefault {
 
-  override def spec: Spec[TestEnvironment, Throwable] = {
+  override def spec: ZSpec[TestEnvironment, Throwable] = {
     suite("AppointmentService")(
       suite("added appointments exist in db")(
         test("returns true confirming existence of added appointment") {
           for {
-            owner <- OwnerService.create("Emily", "Elizabeth", "1 Birdwell Island, New York, NY", "212-215-1928")
+            owner <- OwnerService.create(
+                       "Emily",
+                       "Elizabeth",
+                       "1 Birdwell Island, New York, NY",
+                       "212-215-1928",
+                       "emily@bigreddog.com"
+                     )
             pet <-
               PetService.create("Clifford", LocalDate.of(1962, 2, 14), Species.Canine, owner.id)
             appointment <- AppointmentService.create(
@@ -27,7 +33,8 @@ object AppointmentServiceSpec extends ZIOSpecDefault {
         },
         test("returns true confirming existence of many added appointments") {
           for {
-            owner <- OwnerService.create("Jon", "Arbuckle", "711 Maple St, Muncie, IN", "812-728-1945")
+            owner <-
+              OwnerService.create("Jon", "Arbuckle", "711 Maple St, Muncie, IN", "812-728-1945", "jon@garfield.com")
             pet <-
               PetService.create("Garfield", LocalDate.of(1978, 6, 19), Species.Feline, owner.id)
             appointment1 <-
@@ -42,7 +49,13 @@ object AppointmentServiceSpec extends ZIOSpecDefault {
         test("returns true confirming non-existence of deleted appointment") {
           for {
             owner <-
-              OwnerService.create("Sherlock", "Holmes", "221B Baker St, London, England, UK", "+44-20-7224-3688")
+              OwnerService.create(
+                "Sherlock",
+                "Holmes",
+                "221B Baker St, London, England, UK",
+                "+44-20-7224-3688",
+                "sherlock@sherlockholmes.com"
+              )
             pet <-
               PetService.create("Toby", LocalDate.of(1888, 4, 17), Species.Canine, owner.id)
             appointment <-
@@ -57,7 +70,8 @@ object AppointmentServiceSpec extends ZIOSpecDefault {
         },
         test("returns true confirming the non-existence of many deleted appointments") {
           for {
-            owner <- OwnerService.create("Peter", "Hunter", "Ontario, Canada", "807-511-1918")
+            owner <-
+              OwnerService.create("Peter", "Hunter", "Ontario, Canada", "807-511-1918", "peter@incrediblejourney.com")
             pet <-
               PetService.create("Bodger", LocalDate.of(1963, 11, 20), Species.Canine, owner.id)
             appointment1 <-
@@ -78,7 +92,13 @@ object AppointmentServiceSpec extends ZIOSpecDefault {
         test("returns true confirming updated appointment information") {
           for {
             owner <-
-              OwnerService.create("Harry", "Potter", "4 Privet Drive, Little Whinging, Surrey, UK", "+44-20-7224-3688")
+              OwnerService.create(
+                "Harry",
+                "Potter",
+                "4 Privet Drive, Little Whinging, Surrey, UK",
+                "+44-20-7224-3688",
+                "harry@hogwarts.edu"
+              )
             pet <-
               PetService.create("Snowy Owl", LocalDate.of(1991, 1, 1), Species.Avia, owner.id)
             appointment <-

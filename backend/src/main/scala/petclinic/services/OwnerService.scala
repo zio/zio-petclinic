@@ -8,7 +8,7 @@ import javax.sql.DataSource
 
 trait OwnerService {
 
-  def create(firstName: String, lastName: String, address: String, phone: String): Task[Owner]
+  def create(firstName: String, lastName: String, address: String, phone: String, email: String): Task[Owner]
   def delete(id: OwnerId): Task[Unit]
   def get(id: OwnerId): Task[Option[Owner]]
   def getAll: Task[List[Owner]]
@@ -17,15 +17,22 @@ trait OwnerService {
       firstName: Option[String] = None,
       lastName: Option[String] = None,
       address: Option[String] = None,
-      phone: Option[String] = None
+      phone: Option[String] = None,
+      email: Option[String] = None
   ): Task[Unit]
 
 }
 
 object OwnerService {
 
-  def create(firstName: String, lastName: String, address: String, phone: String): ZIO[OwnerService, Throwable, Owner] =
-    ZIO.serviceWithZIO[OwnerService](_.create(firstName, lastName, address, phone))
+  def create(
+      firstName: String,
+      lastName: String,
+      address: String,
+      phone: String,
+      email: String
+  ): ZIO[OwnerService, Throwable, Owner] =
+    ZIO.serviceWithZIO[OwnerService](_.create(firstName, lastName, address, phone, email))
 
   def delete(id: OwnerId): ZIO[OwnerService, Throwable, Unit] =
     ZIO.serviceWithZIO[OwnerService](_.delete(id))
@@ -41,9 +48,10 @@ object OwnerService {
       firstName: Option[String],
       lastName: Option[String],
       address: Option[String],
-      phone: Option[String]
+      phone: Option[String],
+      email: Option[String]
   ): ZIO[OwnerService, Throwable, Unit] =
-    ZIO.serviceWithZIO[OwnerService](_.update(id, firstName, lastName, address, phone))
+    ZIO.serviceWithZIO[OwnerService](_.update(id, firstName, lastName, address, phone, email))
 
 }
 
@@ -51,9 +59,9 @@ final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
 
   import QuillContext._
 
-  override def create(firstName: String, lastName: String, address: String, phone: String): Task[Owner] =
+  override def create(firstName: String, lastName: String, address: String, phone: String, email: String): Task[Owner] =
     for {
-      owner <- Owner.apply(firstName, lastName, address, phone)
+      owner <- Owner.apply(firstName, lastName, address, phone, email)
       _     <- run(query[Owner].insertValue(lift(owner))).provideEnvironment(ZEnvironment(dataSource))
     } yield owner
 
@@ -77,7 +85,8 @@ final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
       firstName: Option[String],
       lastName: Option[String],
       address: Option[String],
-      phone: Option[String]
+      phone: Option[String],
+      email: Option[String]
   ): Task[Unit] =
     run(
       dynamicQuery[Owner]
@@ -86,7 +95,8 @@ final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
           setOpt(_.firstName, firstName),
           setOpt(_.lastName, lastName),
           setOpt(_.address, address),
-          setOpt(_.phone, phone)
+          setOpt(_.phone, phone),
+          setOpt(_.email, email)
         )
     )
       .provideEnvironment(ZEnvironment(dataSource))
