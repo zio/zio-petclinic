@@ -8,7 +8,7 @@ import petclinic.models._
 
 object OwnerRoutes {
 
-  final case class CreateOwner(firstName: String, lastName: String, address: String, phone: String)
+  final case class CreateOwner(firstName: String, lastName: String, address: String, phone: String, email: String)
 
   object CreateOwner {
 
@@ -21,13 +21,12 @@ object OwnerRoutes {
       firstName: Option[String],
       lastName: Option[String],
       address: Option[String],
-      phone: Option[String]
+      phone: Option[String],
+      email: Option[String]
   )
 
   object UpdateOwner {
-
     implicit val codec: JsonCodec[UpdateOwner] = DeriveJsonCodec.gen[UpdateOwner]
-
   }
 
   val routes: Http[OwnerService, Throwable, Request, Response] =
@@ -49,7 +48,13 @@ object OwnerRoutes {
           body        <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
           createOwner <- ZIO.from(body.fromJson[CreateOwner]).mapError(AppError.JsonDecodingError)
           owner <-
-            OwnerService.create(createOwner.firstName, createOwner.lastName, createOwner.address, createOwner.phone)
+            OwnerService.create(
+              createOwner.firstName,
+              createOwner.lastName,
+              createOwner.address,
+              createOwner.phone,
+              createOwner.email
+            )
         } yield Response.json(owner.toJson)
 
       case req @ Method.POST -> !! / "owners" =>
@@ -61,7 +66,8 @@ object OwnerRoutes {
                  updateOwner.firstName,
                  updateOwner.lastName,
                  updateOwner.address,
-                 updateOwner.phone
+                 updateOwner.phone,
+                 updateOwner.email
                )
         } yield Response.ok
 

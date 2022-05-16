@@ -1,6 +1,6 @@
 package petclinic.models
 
-import zio.json.JsonCodec
+import zio.json._
 
 import java.util.UUID
 
@@ -12,3 +12,7 @@ object VetId {
 }
 
 final case class Vet(id: VetId, lastName: String, specialty: String)
+
+object Vet {
+  implicit val codec: JsonCodec[Vet] = DeriveJsonCodec.gen[Vet]
+}
