@@ -19,12 +19,11 @@ object OwnerId {
   implicit val codec: JsonCodec[OwnerId] = JsonCodec[UUID].transform(OwnerId(_), _.id)
 }
 
-final case class Owner(id: OwnerId, firstName: String, lastName: String, address: String, phone: String)
+final case class Owner(id: OwnerId, firstName: String, lastName: String, address: String, phone: String, email: String)
 
 object Owner {
-
-  def apply(firstName: String, lastName: String, address: String, phone: String): UIO[Owner] =
-    OwnerId.random.map(Owner(_, firstName, lastName, address, phone))
+  def apply(firstName: String, lastName: String, address: String, phone: String, email: String): UIO[Owner] =
+    OwnerId.random.map(Owner(_, firstName, lastName, address, phone, email))
 
   implicit val codec: JsonCodec[Owner] = DeriveJsonCodec.gen[Owner]
 }

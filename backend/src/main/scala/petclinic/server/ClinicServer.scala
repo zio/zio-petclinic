@@ -21,7 +21,7 @@ object ClinicServer extends ZIOAppDefault {
   override val run: ZIO[Any, Throwable, Unit] = {
     for {
       _ <- Migrations.migrate
-      _ <- Server.start(8080, handledApp)
+      _ <- Server.start(8080, handledApp @@ Middleware.cors())
     } yield ()
   }
     .provide(

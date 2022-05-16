@@ -25,9 +25,7 @@ object OwnerRoutes {
   )
 
   object UpdateOwner {
-
     implicit val codec: JsonCodec[UpdateOwner] = DeriveJsonCodec.gen[UpdateOwner]
-
   }
 
   val routes: Http[OwnerService, Throwable, Request, Response] =
