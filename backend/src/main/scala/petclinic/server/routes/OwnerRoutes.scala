@@ -1,6 +1,6 @@
 package petclinic.server.routes
 
-import petclinic.services.OwnerService
+import petclinic.services.{OwnerService, PetService}
 import zhttp.http._
 import zio.ZIO
 import zio.json._
@@ -29,7 +29,7 @@ object OwnerRoutes {
     implicit val codec: JsonCodec[UpdateOwner] = DeriveJsonCodec.gen[UpdateOwner]
   }
 
-  val routes: Http[OwnerService, Throwable, Request, Response] =
+  val routes: Http[OwnerService with PetService, Throwable, Request, Response] =
     Http.collectZIO[Request] {
 
       case Method.GET -> !! / "owners" / id =>
@@ -37,6 +37,16 @@ object OwnerRoutes {
           id    <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
           owner <- OwnerService.get(id)
         } yield Response.json(owner.toJson)
+
+      case Method.GET -> !! / "owners" / id / "pets" =>
+        for {
+          _  <- ZIO.debug(s"GET /owners/$id/pets")
+          id <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
+          _  <- ZIO.debug(s"OWNER ID /owners/$id/pets")
+          pets <-
+            PetService.getForOwner(id).catchAllCause(cause => ZIO.debug(cause.prettyPrint) *> ZIO.failCause(cause))
+          _ <- ZIO.debug(s"PETS $pets")
+        } yield Response.json(pets.toJson)
 
       case Method.GET -> !! / "owners" =>
         OwnerService.getAll.map { owners =>

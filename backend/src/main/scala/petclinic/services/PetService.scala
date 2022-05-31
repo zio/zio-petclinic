@@ -14,6 +14,8 @@ trait PetService {
 
   def get(id: PetId): Task[Option[Pet]]
 
+  def getForOwner(ownerId: OwnerId): Task[List[Pet]]
+
   def getAll: Task[List[Pet]]
 
   def update(
@@ -41,6 +43,9 @@ object PetService {
 
   def get(id: PetId): ZIO[PetService, Throwable, Option[Pet]] =
     ZIO.serviceWithZIO[PetService](_.get(id))
+
+  def getForOwner(ownerId: OwnerId): ZIO[PetService, Throwable, List[Pet]] =
+    ZIO.serviceWithZIO[PetService](_.getForOwner(ownerId))
 
   def getAll: ZIO[PetService, Throwable, List[Pet]] =
     ZIO.serviceWithZIO[PetService](_.getAll)
@@ -79,8 +84,12 @@ final case class PetServiceLive(dataSource: DataSource) extends PetService {
       .provideEnvironment(ZEnvironment(dataSource))
       .map(_.headOption)
 
+  override def getForOwner(ownerId: OwnerId): Task[List[Pet]] =
+    run(query[Pet].filter(_.ownerId == lift(ownerId)).sortBy(_.birthdate))
+      .provideEnvironment(ZEnvironment(dataSource))
+
   override def getAll: Task[List[Pet]] =
-    run(query[Pet])
+    run(query[Pet].sortBy(_.birthdate))
       .provideEnvironment(ZEnvironment(dataSource))
       .map(_.toList)
 

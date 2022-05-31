@@ -5,86 +5,69 @@ import com.raquo.laminar.api.L.{Owner => _, _}
 import sttp.capabilities
 import sttp.client3._
 import zio.json._
+import zio.json.internal.RetractReader
 
 import scala.concurrent.Future
 
 object Requests {
   private val backend: SttpBackend[Future, capabilities.WebSockets] = FetchBackend()
 
-  private def formatGetFuture(filter: String): Future[Response[String]] = {
-    val request = quickRequest.get(uri"http://localhost:8080/$filter")
-    backend.send(request)
-  }
-
-  private def formatPostFuture(filter: String, body: String): Future[Response[String]] = {
-    val request = quickRequest.post(uri"http://localhost:8080/$filter").body(body)
-    backend.send(request)
-  }
-
-  // get owner by id
-  def getOwner(id: OwnerId): EventStream[Owner] = {
-    val future = formatGetFuture(s"owners/$id")
-    EventStream.fromFuture(future).map { response =>
-      response.body.fromJson[Owner] match {
-        case Right(owner) => owner
-        case Left(error)  => throw new Error(s"Error parsing JSON: $error")
+  def getRequest[B: JsonCodec](path: Any*): EventStream[B] = {
+    val request = quickRequest.get(uri"http://localhost:8080/$path")
+    EventStream.fromFuture(backend.send(request)).map { response =>
+      response.body.fromJson[B] match {
+        case Right(b) => b
+        case Left(e)  => throw new Error(s"Error parsing JSON: $e")
       }
     }
   }
 
-  // get all pets for owner
-  def getPets(ownerId: OwnerId): EventStream[List[Pet]] = {
-    val future = formatGetFuture(s"owners/$ownerId/pets")
-    EventStream.fromFuture(future).map { response =>
-      response.body.fromJson[List[Pet]] match {
-        case Right(pets) => pets
-        case Left(error) => throw new Error(s"Error parsing JSON: $error")
+  def postRequest[In: JsonEncoder, Out: JsonDecoder](body: In)(path: Any*): EventStream[Out] = {
+    val request = quickRequest.post(uri"http://localhost:8080/$path").body(body.toJson)
+    EventStream.fromFuture(backend.send(request)).map { response =>
+      response.body.fromJson[Out] match {
+        case Right(b) => b
+        case Left(e)  => throw new Error(s"Error parsing JSON: $e")
       }
     }
   }
 
-  // get all appointments for pet
-  def getAppointments(petId: PetId): EventStream[List[Appointment]] = {
-    val future = formatGetFuture(s"pets/$petId/appointments")
-    EventStream.fromFuture(future).map { response =>
-      response.body.fromJson[List[Appointment]] match {
-        case Right(appointments) => appointments
-        case Left(error)         => throw new Error(s"Error parsing JSON: $error")
+  def patchRequest[In: JsonEncoder, Out: JsonDecoder](body: In)(path: Any*): EventStream[Out] = {
+    val request = quickRequest.patch(uri"http://localhost:8080/$path").body(body.toJson)
+    EventStream.fromFuture(backend.send(request)).map { response =>
+      response.body.fromJson[Out] match {
+        case Right(b) => b
+        case Left(e)  => throw new Error(s"Error parsing JSON: $e")
       }
     }
   }
 
-  // add owner (can be used for update also?)
-  def addOwner(owner: Owner): EventStream[Owner] = {
-    val future = formatPostFuture("owners", owner.toJson)
-    EventStream.fromFuture(future).map { response =>
-      response.body.fromJson[Owner] match {
-        case Right(owner) => owner
-        case Left(error)  => throw new Error(s"Error parsing JSON: $error")
-      }
-    }
-  }
+  def getPets(ownerId: OwnerId): EventStream[List[Pet]] =
+    getRequest[List[Pet]]("owners", ownerId.id, "pets")
 
-  // add pet (can be used for update also?)
-  def addPet(ownerId: OwnerId, pet: Pet): EventStream[Pet] = {
-    val future = formatPostFuture(s"owners/$ownerId/pets", pet.toJson)
-    EventStream.fromFuture(future).map { response =>
-      response.body.fromJson[Pet] match {
-        case Right(pet)  => pet
-        case Left(error) => throw new Error(s"Error parsing JSON: $error")
-      }
-    }
-  }
+  def addPet(createPet: CreatePet): EventStream[Pet] =
+    postRequest[CreatePet, Pet](createPet)("pets")
 
-  // add appointment (can be used for update also?)
-  def addAppointment(petId: PetId, appointment: Appointment): EventStream[Appointment] = {
-    val future = formatPostFuture(s"pets/$petId/appointments", appointment.toJson)
-    EventStream.fromFuture(future).map { response =>
-      response.body.fromJson[Appointment] match {
-        case Right(appointment) => appointment
-        case Left(error)        => throw new Error(s"Error parsing JSON: $error")
-      }
-    }
-  }
+  def updatePet(petId: PetId, updatePet: UpdatePet): EventStream[Unit] =
+    patchRequest[UpdatePet, Unit](updatePet)("pets", petId.id)
 
+  def getOwner(id: OwnerId): EventStream[Owner] =
+    getRequest[Owner]("owners", id.id)
+
+  def getVisits(petId: PetId): EventStream[List[Visit]] =
+    getRequest[List[Visit]]("pets", petId.id, "visits")
+
+  def addOwner(owner: Owner): EventStream[Owner] =
+    postRequest[Owner, Owner](owner)("owners")
+
+  def addVisit(petId: PetId, createVisit: CreateVisit): EventStream[Visit] =
+    postRequest[CreateVisit, Visit](createVisit)("pets", petId.id, "visits")
+
+  def updateVisit(visitId: VisitId, updateVisit: UpdateVisit): EventStream[Unit] =
+    patchRequest[UpdateVisit, Unit](updateVisit)("visits", visitId.id)
+
+  implicit lazy val unitDecoder: JsonDecoder[Unit] =
+    new JsonDecoder[Unit] {
+      override def unsafeDecode(trace: List[JsonError], in: RetractReader): Unit = ()
+    }
 }
