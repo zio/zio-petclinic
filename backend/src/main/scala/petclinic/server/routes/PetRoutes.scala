@@ -1,39 +1,36 @@
 package petclinic.server.routes
 
-import petclinic.services.PetService
+import petclinic.services.{PetService, VisitService}
 import zhttp.http._
-import zio.ZIO
+import zio.{IO, ZIO}
 import zio.json._
 import petclinic.models._
 
+// TODO:
+//  1. Move into its own file
+//  2. Figure out how to create a general "Id Parsing" method
+object ServerUtils {
+  def parseBody[A: JsonDecoder](request: Request): IO[AppError, A] =
+    for {
+      body   <- request.bodyAsString.orElseFail(AppError.MissingBodyError)
+      parsed <- ZIO.from(body.fromJson[A]).mapError(AppError.JsonDecodingError)
+    } yield parsed
+
+  def parsePetId(id: String): IO[AppError.JsonDecodingError, PetId] =
+    PetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
+
+  def parseVisitId(id: String): IO[AppError.JsonDecodingError, VisitId] =
+    VisitId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
+}
+
 object PetRoutes {
+  import ServerUtils._
 
-  final case class CreatePet(name: String, birthdate: java.time.LocalDate, species: Species, ownerId: OwnerId)
-
-  object CreatePet {
-
-    implicit val codec: JsonCodec[CreatePet] = DeriveJsonCodec.gen[CreatePet]
-  }
-
-  final case class UpdatePet(
-      id: PetId,
-      name: Option[String],
-      birthdate: Option[java.time.LocalDate],
-      species: Option[Species],
-      ownerId: Option[OwnerId]
-  )
-
-  object UpdatePet {
-
-    implicit val codec: JsonCodec[UpdatePet] = DeriveJsonCodec.gen[UpdatePet]
-
-  }
-
-  val routes: Http[PetService, Throwable, Request, Response] = Http.collectZIO[Request] {
+  val routes: Http[PetService with VisitService, Throwable, Request, Response] = Http.collectZIO[Request] {
 
     case Method.GET -> !! / "pets" / id =>
       for {
-        id  <- PetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
+        id  <- parsePetId(id)
         pet <- PetService.get(id)
       } yield Response.json(pet.toJson)
 
@@ -42,23 +39,23 @@ object PetRoutes {
 
     case req @ Method.POST -> !! / "pets" =>
       for {
-        body      <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
-        createPet <- ZIO.from(body.fromJson[CreatePet]).mapError(AppError.JsonDecodingError)
+        createPet <- parseBody[CreatePet](req)
         pet       <- PetService.create(createPet.name, createPet.birthdate, createPet.species, createPet.ownerId)
       } yield Response.json(pet.toJson)
 
-    case req @ Method.POST -> !! / "pets" =>
+    case req @ Method.PATCH -> !! / "pets" / id =>
       for {
-        body      <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
-        updatePet <- ZIO.from(body.fromJson[UpdatePet]).mapError(AppError.JsonDecodingError)
-        _         <- PetService.update(updatePet.id, updatePet.name, updatePet.birthdate, updatePet.species, updatePet.ownerId)
+        petId     <- parsePetId(id)
+        updatePet <- parseBody[UpdatePet](req)
+        _         <- PetService.update(petId, updatePet.name, updatePet.birthdate, updatePet.species, updatePet.ownerId)
       } yield Response.ok
 
-    case req @ Method.DELETE -> !! / "pets" / id =>
+    case Method.DELETE -> !! / "pets" / id =>
       for {
-        id <- PetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
+        id <- parsePetId(id)
         _  <- PetService.delete(id)
       } yield Response.ok
+
   }
 
 }

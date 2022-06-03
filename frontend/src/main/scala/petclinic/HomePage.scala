@@ -1,52 +1,36 @@
 package petclinic
 
 import com.raquo.laminar.api.L.{Owner => _, _}
-import petclinic.models._
-import sttp.client3._
+import petclinic.views._
 
-import scala.concurrent.Future
-import zio.json._
+// TODO LIST
+//  √ Edit Visits
+//  - Create Vet Index
+//  - Delete Visits
+//  - Delete Pets
+//  - Create Owners
+//  - Edit Owner
+//  - Delete Owner
+//  - Search Owners by Name
+//  - Owner Index Page (List Recent Owners and show Search Bar)
 
-object Requests {
-  val backend = FetchBackend()
-
-  def allOwners(): EventStream[List[Owner]] = {
-    val request                          = quickRequest.get(uri"http://localhost:8080/owners")
-    val future: Future[Response[String]] = backend.send(request)
-    EventStream.fromFuture(future).map { response =>
-      response.body.fromJson[List[Owner]] match {
-        case Right(pets) => pets
-        case Left(error) => throw new Error(s"Error parsing JSON: $error")
-      }
-    }
-  }
-}
-
-trait Component {
-  def body: HtmlElement
-}
-
-object Component {
-  implicit def component2HtmlElement(component: Component): HtmlElement =
-    component.body
-}
-
-case class OwnerView(owner: Owner) extends Component {
-  def body = div(
-    div(s"${owner.firstName} ${owner.lastName}"),
-    div(owner.address)
-  )
-}
-
-object HomePage {
-  def body =
+object MainPage {
+  def body: Div =
     div(
-      cls("text-4xl text-red-300"),
-      h1("Home"),
-      pre(
-        children <-- Requests.allOwners().map { owners =>
-          owners.map(OwnerView(_))
-        }
+      minHeight("100vh"),
+      cls("bg-gray-100"),
+      div(
+        fontFamily("Inter, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue"),
+        cls("p-8 text-gray-900"),
+        NavBar(),
+        div(
+          maxWidth("750px"),
+          margin("0 auto"),
+          child <-- Router.router.$currentPage.map {
+            case Page.OwnerPage(ownerId) => OwnerViewWrapper(ownerId)
+            case Page.HomePage           => div("LOGIN")
+          }
+        )
       )
     )
 }

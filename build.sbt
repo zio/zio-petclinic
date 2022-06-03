@@ -11,6 +11,7 @@ val postgresVersion          = "42.3.4"
 val flywayVersion            = "8.5.10"
 val zioTestContainersVersion = "0.4.1"
 val laminarVersion           = "0.14.2"
+val animusVersion            = "0.1.12"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -50,11 +51,13 @@ lazy val frontend = (project in file("frontend"))
   .settings(
     name := "pet-clinic-frontend",
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
-    scalaJSLinkerConfig ~= { _.withSourceMap(false) },
     scalaJSUseMainModuleInitializer := true,
+    scalaJSLinkerConfig ~= { _.withSourceMap(false) },
     libraryDependencies ++= Seq(
       "com.raquo"                     %%% "laminar"         % laminarVersion,
-      "io.github.cquiroz"             %%% "scala-java-time" % "2.2.1",
+      "io.github.kitlangton"          %%% "animus"          % animusVersion,
+      "com.raquo"                     %%% "waypoint"        % "0.5.0",
+      "io.github.cquiroz"             %%% "scala-java-time" % "2.3.0",
       "com.softwaremill.sttp.client3" %%% "core"            % "3.6.1"
     )
   )
@@ -64,7 +67,7 @@ lazy val frontend = (project in file("frontend"))
 lazy val shared = (project in file("shared"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
-    scalaJSLinkerConfig ~= { _.withSourceMap(false) }
+    scalaJSLinkerConfig ~= { _.withSourceMap(false) },
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
   )
   .settings(sharedSettings)
