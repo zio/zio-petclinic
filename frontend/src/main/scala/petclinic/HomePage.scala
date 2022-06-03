@@ -4,15 +4,14 @@ import com.raquo.laminar.api.L.{Owner => _, _}
 import petclinic.views._
 
 // TODO LIST
-//  √ Edit Visits
-//  - Create Vet Index
-//  - Delete Visits
-//  - Delete Pets
-//  - Create Owners
-//  - Edit Owner
-//  - Delete Owner
-//  - Search Owners by Name
-//  - Owner Index Page (List Recent Owners and show Search Bar)
+//  √ Delete Visits (visit page)
+//  √ Delete Pets (pet page)
+//  √ Owner Index Page (List Recent Owners and show Search Bar) (owner homepage)
+//  √ Search Owners by Name (owner homepage)
+//  - Create Vet Index (vet page)
+//  - Create Owners (owner homepage)
+//  - Edit Owner (owner page)
+//  - Delete Owner (owner page)
 
 object MainPage {
   def body: Div =
@@ -27,8 +26,10 @@ object MainPage {
           maxWidth("750px"),
           margin("0 auto"),
           child <-- Router.router.$currentPage.map {
+            case Page.OwnersPage         => OwnerIndexView()
             case Page.OwnerPage(ownerId) => OwnerViewWrapper(ownerId)
-            case Page.HomePage           => div("LOGIN")
+            case Page.HomePage           => div("HOME")
+            case Page.VeterinariansPage  => div("VETS")
           }
         )
       )

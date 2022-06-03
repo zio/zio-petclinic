@@ -10,6 +10,7 @@ import java.util.UUID
 sealed trait Page
 
 object Page {
+  case object OwnersPage            extends Page
   case class OwnerPage(id: OwnerId) extends Page
   case object HomePage              extends Page
   case object VeterinariansPage     extends Page
@@ -20,17 +21,23 @@ object Page {
 object Router {
   import Page._
 
+  val homeRoute =
+    Route.static(HomePage, root / endOfSegments)
+
+  val veterinariansRoute =
+    Route.static(VeterinariansPage, root / "veterinarians" / endOfSegments)
+
+  val ownersRoute =
+    Route.static(OwnersPage, root / "owners" / endOfSegments)
+
   val ownerRoute = Route(
     encode = (userPage: Page.OwnerPage) => userPage.id.id.toString,
     decode = (id: String) => OwnerPage(OwnerId(UUID.fromString(id))),
     pattern = root / "owners" / segment[String] / endOfSegments
   )
 
-  val loginRoute =
-    Route.static(HomePage, root / "login" / endOfSegments)
-
   val router = new Router[Page](
-    routes = List(ownerRoute, loginRoute),
+    routes = List(ownersRoute, ownerRoute, homeRoute, veterinariansRoute),
     getPageTitle = _.toString,                                              // mock page title (displayed in the browser tab next to favicon)
     serializePage = page => page.toJson,                                    // serialize page data for storage in History API log
     deserializePage = pageStr => pageStr.fromJson[Page].getOrElse(HomePage) // deserialize the above

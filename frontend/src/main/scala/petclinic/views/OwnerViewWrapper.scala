@@ -48,8 +48,19 @@ case class OwnerView(owner: Owner) extends Component {
       ),
       button(
         div(
-          cls("p-1 px-2 rounded bg-gray-200 text-gray-500 mb-4 hover:text-gray-400"),
+          cls("p-1 px-2 rounded bg-gray-200 text-gray-500 mb-4 mr-2 hover:text-gray-400"),
           "Add Pet"
+        ),
+        onClick --> { _ =>
+          showNewPetFormVar.update(!_)
+        },
+        Transitions.height(showNewPetFormVar.signal.map(!_)),
+        Transitions.opacity(showNewPetFormVar.signal.map(!_))
+      ),
+      button(
+        div(
+          cls("p-1 px-2 text-gray-500 mb-4 ml-2 hover:text-gray-400"),
+          "Edit"
         ),
         onClick --> { _ =>
           showNewPetFormVar.update(!_)
@@ -73,7 +84,7 @@ case class OwnerView(owner: Owner) extends Component {
     div(
       Transitions.height(showNewPetFormVar.signal),
       Transitions.opacity(showNewPetFormVar.signal),
-      NewPetForm(owner, showNewPetFormVar)
+      NewPetForm(owner, showNewPetFormVar, () => reloadPetBus.emit(()))
     ),
     div(cls("h-8")),
     children <-- $pets.map { pets =>

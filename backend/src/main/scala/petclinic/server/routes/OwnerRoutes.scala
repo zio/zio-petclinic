@@ -8,27 +8,6 @@ import petclinic.models._
 
 object OwnerRoutes {
 
-  final case class CreateOwner(firstName: String, lastName: String, address: String, phone: String, email: String)
-
-  object CreateOwner {
-
-    implicit val codec: JsonCodec[CreateOwner] = DeriveJsonCodec.gen[CreateOwner]
-
-  }
-
-  final case class UpdateOwner(
-      id: OwnerId,
-      firstName: Option[String],
-      lastName: Option[String],
-      address: Option[String],
-      phone: Option[String],
-      email: Option[String]
-  )
-
-  object UpdateOwner {
-    implicit val codec: JsonCodec[UpdateOwner] = DeriveJsonCodec.gen[UpdateOwner]
-  }
-
   val routes: Http[OwnerService with PetService, Throwable, Request, Response] =
     Http.collectZIO[Request] {
 

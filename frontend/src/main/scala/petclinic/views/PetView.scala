@@ -145,6 +145,19 @@ final case class EditPetForm(
         div(
           cls("flex items-center"),
           button(
+            cls("p-2 px-4 bg-gray-100 text-gray-500 text-lg rounded-sm mr-6"),
+            cls("hover:text-gray-400"),
+            "Delete",
+            onClick --> { _ =>
+              Requests
+                .deletePet(pet.id)
+                .foreach { _ =>
+                  reloadPets()
+                }(unsafeWindowOwner)
+              showVar.set(false)
+            }
+          ),
+          button(
             cls("p-2 px-4 bg-gray-100 text-gray-500 border border-gray-300 text-lg rounded-sm mr-6"),
             cls("hover:text-gray-400"),
             "Cancel",
@@ -194,7 +207,8 @@ final case class EditPetForm(
 
 final case class NewPetForm(
     owner: Owner,
-    showVar: Var[Boolean]
+    showVar: Var[Boolean],
+    reloadPets: () => Unit
 ) extends Component {
   val petNameVar: Var[String]      = Var("")
   val speciesVar: Var[Species]     = Var(Species.Feline)
@@ -289,14 +303,18 @@ final case class NewPetForm(
               val species   = speciesVar.now()
               val birthdate = birthdateVar.now()
 
-              Requests.addPet(
-                CreatePet(
-                  name,
-                  birthdate,
-                  species,
-                  owner.id
+              Requests
+                .addPet(
+                  CreatePet(
+                    name,
+                    birthdate,
+                    species,
+                    owner.id
+                  )
                 )
-              )
+                .foreach { _ =>
+                  reloadPets()
+                }(unsafeWindowOwner)
 
               petNameVar.set("")
               speciesVar.set(Species.Feline)

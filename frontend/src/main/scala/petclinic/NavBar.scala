@@ -18,7 +18,7 @@ final case class NavBar() extends Component {
         display.flex,
         fontSize("18px"),
         navLink("Home", HomePage),
-        navLink("Owners", Page.OwnerPage(OwnerId(UUID.fromString("941e3ad7-cb36-4f5a-ac6e-afc71666b36c")))),
+        navLink("Owners", Page.OwnersPage),
         navLink("Veterinarians", Page.VeterinariansPage)
       )
     )

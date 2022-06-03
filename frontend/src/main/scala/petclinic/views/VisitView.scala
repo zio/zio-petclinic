@@ -95,6 +95,19 @@ final case class EditVisitForm(visit: Visit, showVar: Var[Boolean], reloadVisits
         div(
           cls("flex items-center"),
           button(
+            cls("p-2 px-4 text-gray-500 rounded-sm mr-2"),
+            cls("hover:text-gray-400"),
+            "Delete",
+            onClick --> { _ =>
+              Requests
+                .deleteVisit(visit.id)
+                .foreach { _ =>
+                  reloadVisits()
+                }(unsafeWindowOwner)
+              showVar.set(false)
+            }
+          ),
+          button(
             cls("p-2 px-4 bg-gray-100 text-gray-500 border border-gray-300 rounded-sm mr-2"),
             cls("hover:text-gray-400"),
             "Cancel",
