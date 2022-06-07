@@ -21,17 +21,12 @@ final case class EditablePetView(pet: Pet, reloadPets: () => Unit) extends Compo
       div(
         PetView(pet, isEditingVar),
         Transitions.heightDynamic(isEditingVar.signal.map(!_))
-      ),
-      div(
-        // add visit form
       )
     )
 }
 
 final case class PetView(pet: Pet, isEditingVar: Var[Boolean]) extends Component {
 
-  // pet and its visits
-  // visit (date, description, and the vet name)
   def body =
     div(
       cls("mb-20"),

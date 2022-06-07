@@ -71,6 +71,12 @@ object Requests {
   def addOwner(createOwner: CreateOwner): EventStream[Owner] =
     postRequest[CreateOwner, Owner](createOwner)("owners")
 
+  def updateOwner(ownerId: OwnerId, updateOwner: UpdateOwner): EventStream[Unit] =
+    patchRequest[UpdateOwner, Unit](updateOwner)("owners", ownerId.id)
+
+  def deleteOwner(ownerId: OwnerId): EventStream[Unit] =
+    deleteRequest("owners", ownerId.id)
+
   def addVisit(petId: PetId, createVisit: CreateVisit): EventStream[Visit] =
     postRequest[CreateVisit, Visit](createVisit)("pets", petId.id, "visits")
 
@@ -79,6 +85,12 @@ object Requests {
 
   def deleteVisit(visitId: VisitId): EventStream[Unit] =
     deleteRequest("visits", visitId.id)
+
+  def getAllVets: EventStream[List[Vet]] =
+    getRequest[List[Vet]]("veterinarians")
+
+  def getVet(vetId: VetId): EventStream[Vet] =
+    getRequest[Vet]("veterinarians", vetId.id)
 
   implicit lazy val unitDecoder: JsonDecoder[Unit] =
     new JsonDecoder[Unit] {

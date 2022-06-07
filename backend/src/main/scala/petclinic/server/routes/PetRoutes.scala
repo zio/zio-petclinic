@@ -1,30 +1,12 @@
 package petclinic.server.routes
 
+import petclinic.models._
+import petclinic.server.routes.ServerUtils._
 import petclinic.services.{PetService, VisitService}
 import zhttp.http._
-import zio.{IO, ZIO}
 import zio.json._
-import petclinic.models._
-
-// TODO:
-//  1. Move into its own file
-//  2. Figure out how to create a general "Id Parsing" method
-object ServerUtils {
-  def parseBody[A: JsonDecoder](request: Request): IO[AppError, A] =
-    for {
-      body   <- request.bodyAsString.orElseFail(AppError.MissingBodyError)
-      parsed <- ZIO.from(body.fromJson[A]).mapError(AppError.JsonDecodingError)
-    } yield parsed
-
-  def parsePetId(id: String): IO[AppError.JsonDecodingError, PetId] =
-    PetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
-
-  def parseVisitId(id: String): IO[AppError.JsonDecodingError, VisitId] =
-    VisitId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
-}
 
 object PetRoutes {
-  import ServerUtils._
 
   val routes: Http[PetService with VisitService, Throwable, Request, Response] = Http.collectZIO[Request] {
 

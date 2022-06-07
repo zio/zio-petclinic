@@ -10,9 +10,9 @@ import java.time.LocalDate
 
 object ClinicServer extends ZIOAppDefault {
 
-  val handledApp: Http[OwnerService with PetService with VisitService, Nothing, Request, Response] = {
+  val handledApp: Http[OwnerService with PetService with VisitService with VetService, Nothing, Request, Response] = {
     import routes._
-    (OwnerRoutes.routes ++ PetRoutes.routes ++ VisitRoutes.routes).catchAll {
+    (OwnerRoutes.routes ++ PetRoutes.routes ++ VisitRoutes.routes ++ VetRoutes.routes).catchAll {
       case AppError.MissingBodyError =>
         Http.text("MISSING BODY").setStatus(Status.BadRequest)
       case AppError.JsonDecodingError(message) =>
@@ -20,16 +20,8 @@ object ClinicServer extends ZIOAppDefault {
     }
   }
 
-  val createFixtures =
-    for {
-      crumb <- PetService.getAll.map(_.head)
-      _     <- VisitService.create(crumb.id, LocalDate.now(), "Gall bladder improved")
-      _     <- VisitService.create(crumb.id, LocalDate.now().minusDays(3), "Added extra limbs and ears")
-    } yield ()
-
   override val run: ZIO[Any, Throwable, Unit] = {
     for {
-//      _ <- createFixtures
       _ <- Migrations.migrate
       _ <- Server.start(8080, handledApp @@ Middleware.cors())
     } yield ()

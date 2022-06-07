@@ -22,7 +22,7 @@ object Router {
   import Page._
 
   val homeRoute =
-    Route.static(HomePage, root / endOfSegments)
+    Route.static(OwnersPage, root / endOfSegments)
 
   val veterinariansRoute =
     Route.static(VeterinariansPage, root / "veterinarians" / endOfSegments)

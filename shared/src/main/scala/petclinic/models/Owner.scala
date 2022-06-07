@@ -46,7 +46,6 @@ object CreateOwner {
 }
 
 final case class UpdateOwner(
-    id: OwnerId,
     firstName: Option[String],
     lastName: Option[String],
     address: Option[String],
