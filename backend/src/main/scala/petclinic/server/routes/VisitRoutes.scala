@@ -30,6 +30,12 @@ object VisitRoutes {
           updateVisit <- parseBody[UpdateVisit](req)
           _           <- VisitService.update(visitId, updateVisit.date, updateVisit.description)
         } yield Response.ok
+
+      case Method.DELETE -> !! / "visits" / id =>
+        for {
+          visitId <- parseVisitId(id)
+          _       <- VisitService.delete(visitId)
+        } yield Response.ok
     }
 
 }

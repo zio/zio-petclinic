@@ -21,17 +21,12 @@ final case class EditablePetView(pet: Pet, reloadPets: () => Unit) extends Compo
       div(
         PetView(pet, isEditingVar),
         Transitions.heightDynamic(isEditingVar.signal.map(!_))
-      ),
-      div(
-        // add visit form
       )
     )
 }
 
 final case class PetView(pet: Pet, isEditingVar: Var[Boolean]) extends Component {
 
-  // pet and its visits
-  // visit (date, description, and the vet name)
   def body =
     div(
       cls("mb-20"),
@@ -145,6 +140,19 @@ final case class EditPetForm(
         div(
           cls("flex items-center"),
           button(
+            cls("p-2 px-4 bg-gray-100 text-gray-500 text-lg rounded-sm mr-6"),
+            cls("hover:text-gray-400"),
+            "Delete",
+            onClick --> { _ =>
+              Requests
+                .deletePet(pet.id)
+                .foreach { _ =>
+                  reloadPets()
+                }(unsafeWindowOwner)
+              showVar.set(false)
+            }
+          ),
+          button(
             cls("p-2 px-4 bg-gray-100 text-gray-500 border border-gray-300 text-lg rounded-sm mr-6"),
             cls("hover:text-gray-400"),
             "Cancel",
@@ -194,7 +202,8 @@ final case class EditPetForm(
 
 final case class NewPetForm(
     owner: Owner,
-    showVar: Var[Boolean]
+    showVar: Var[Boolean],
+    reloadPets: () => Unit
 ) extends Component {
   val petNameVar: Var[String]      = Var("")
   val speciesVar: Var[Species]     = Var(Species.Feline)
@@ -289,14 +298,18 @@ final case class NewPetForm(
               val species   = speciesVar.now()
               val birthdate = birthdateVar.now()
 
-              Requests.addPet(
-                CreatePet(
-                  name,
-                  birthdate,
-                  species,
-                  owner.id
+              Requests
+                .addPet(
+                  CreatePet(
+                    name,
+                    birthdate,
+                    species,
+                    owner.id
+                  )
                 )
-              )
+                .foreach { _ =>
+                  reloadPets()
+                }(unsafeWindowOwner)
 
               petNameVar.set("")
               speciesVar.set(Species.Feline)

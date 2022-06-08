@@ -8,29 +8,13 @@ import petclinic.models._
 
 object OwnerRoutes {
 
-  final case class CreateOwner(firstName: String, lastName: String, address: String, phone: String, email: String)
-
-  object CreateOwner {
-
-    implicit val codec: JsonCodec[CreateOwner] = DeriveJsonCodec.gen[CreateOwner]
-
-  }
-
-  final case class UpdateOwner(
-      id: OwnerId,
-      firstName: Option[String],
-      lastName: Option[String],
-      address: Option[String],
-      phone: Option[String],
-      email: Option[String]
-  )
-
-  object UpdateOwner {
-    implicit val codec: JsonCodec[UpdateOwner] = DeriveJsonCodec.gen[UpdateOwner]
-  }
-
   val routes: Http[OwnerService with PetService, Throwable, Request, Response] =
     Http.collectZIO[Request] {
+
+      case Method.GET -> !! / "owners" =>
+        OwnerService.getAll.map { owners =>
+          Response.json(owners.toJson)
+        }
 
       case Method.GET -> !! / "owners" / id =>
         for {
@@ -40,18 +24,10 @@ object OwnerRoutes {
 
       case Method.GET -> !! / "owners" / id / "pets" =>
         for {
-          _  <- ZIO.debug(s"GET /owners/$id/pets")
           id <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
-          _  <- ZIO.debug(s"OWNER ID /owners/$id/pets")
           pets <-
             PetService.getForOwner(id).catchAllCause(cause => ZIO.debug(cause.prettyPrint) *> ZIO.failCause(cause))
-          _ <- ZIO.debug(s"PETS $pets")
         } yield Response.json(pets.toJson)
-
-      case Method.GET -> !! / "owners" =>
-        OwnerService.getAll.map { owners =>
-          Response.json(owners.toJson)
-        }
 
       case req @ Method.POST -> !! / "owners" =>
         for {
@@ -67,12 +43,13 @@ object OwnerRoutes {
             )
         } yield Response.json(owner.toJson)
 
-      case req @ Method.POST -> !! / "owners" =>
+      case req @ Method.PATCH -> !! / "owners" / id =>
         for {
           body        <- req.bodyAsString.orElseFail(AppError.MissingBodyError)
+          ownerId     <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
           updateOwner <- ZIO.from(body.fromJson[UpdateOwner]).mapError(AppError.JsonDecodingError)
           _ <- OwnerService.update(
-                 updateOwner.id,
+                 ownerId,
                  updateOwner.firstName,
                  updateOwner.lastName,
                  updateOwner.address,
@@ -81,10 +58,10 @@ object OwnerRoutes {
                )
         } yield Response.ok
 
-      case req @ Method.DELETE -> !! / "owners" / id =>
+      case Method.DELETE -> !! / "owners" / id =>
         for {
-          id    <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
-          owner <- OwnerService.delete(id)
+          id <- OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
+          _  <- OwnerService.delete(id)
         } yield Response.ok
     }
 }

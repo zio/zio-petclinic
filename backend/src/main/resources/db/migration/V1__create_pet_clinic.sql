@@ -50,15 +50,20 @@ VALUES ('Dr. Sid', 'Neurology');
 INSERT INTO vet (last_name, specialty)
 VALUES ('Dr. Stuart', 'Small Animal Internal Medicine');
 
-
 -- Add example owners
 INSERT INTO owner (first_name, last_name, address, phone, email)
 VALUES ('Emily', 'Elizabeth', '1 Birdwell Island, New York, NY', '212-215-1928', 'emily@bigreddog.com');
+INSERT INTO owner (first_name, last_name, address, phone, email)
+VALUES ('Sherlock', 'Holmes', '221B Baker St, London, England, UK', '+44-20-7224-3688', 'sherlock@sherlockholmes.com');
 
 -- Add example pet
 INSERT INTO pet (name, birthdate, species, owner_id)
 VALUES ('Clifford', '1962-02-14', 'Canine', (SELECT id FROM owner WHERE email = 'emily@bigreddog.com'));
+INSERT INTO pet (name, birthdate, species, owner_id)
+VALUES ('Toby', '1888-04-17', 'Canine', (SELECT id FROM owner WHERE email = 'sherlock@sherlockholmes.com'));
 
 -- Add visits
 INSERT INTO visit (date, description, vet_id, pet_id)
-VALUES ('2001-01-01', 'Checkup', (SELECT id FROM vet WHERE last_name = 'Dr. Baloo'), (SELECT id FROM pet WHERE name = 'Clifford'));
+VALUES ('2001-01-01', 'Check weight', (SELECT id FROM vet WHERE last_name = 'Dr. Totoro'), (SELECT id FROM pet WHERE name = 'Clifford'));
+INSERT INTO visit (date, description, vet_id, pet_id)
+VALUES ('2022, 8, 23', 'Have scent detection measured', (SELECT id FROM vet WHERE last_name = 'Dr. Sid'), (SELECT id FROM pet WHERE name = 'Toby'));

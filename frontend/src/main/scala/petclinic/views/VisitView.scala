@@ -2,9 +2,8 @@ package petclinic.views
 
 import animus.Transitions
 import com.raquo.laminar.api.L.{Owner => _, _}
-import org.scalajs.dom.window.setTimeout
 import petclinic.models.{CreateVisit, Pet, UpdateVisit, Visit}
-import petclinic.{Component, Requests, Style}
+import petclinic.{Component, Requests}
 
 import java.time.LocalDate
 
@@ -94,6 +93,19 @@ final case class EditVisitForm(visit: Visit, showVar: Var[Boolean], reloadVisits
         ),
         div(
           cls("flex items-center"),
+          button(
+            cls("p-2 px-4 text-red-500 border border-red-300 rounded-sm mr-2"),
+            cls("hover:text-red-400"),
+            "Delete",
+            onClick --> { _ =>
+              Requests
+                .deleteVisit(visit.id)
+                .foreach { _ =>
+                  reloadVisits()
+                }(unsafeWindowOwner)
+              showVar.set(false)
+            }
+          ),
           button(
             cls("p-2 px-4 bg-gray-100 text-gray-500 border border-gray-300 rounded-sm mr-2"),
             cls("hover:text-gray-400"),
@@ -227,19 +239,18 @@ final case class EditableVisitView(visit: Visit, reloadVisits: () => Unit) exten
     div(
       div(
         EditVisitForm(visit, isEditingVar, reloadVisits),
-        Transitions.height(isEditingVar.signal)
+        Transitions.heightDynamic(isEditingVar.signal)
       ),
       div(
         VisitView(visit, isEditingVar),
-        Transitions.height(isEditingVar.signal.map(!_))
+        Transitions.heightDynamic(isEditingVar.signal.map(!_))
       )
     )
 }
 
 final case class VisitView(visit: Visit, isEditingVar: Var[Boolean] = Var(false)) extends Component {
 
-  // TODO: Display actual Vet's name
-//  val $vet = Requests.getVet(visit.vetId)
+  val $vet = Requests.getVet(visit.vetId)
 
   def body =
     div(
@@ -249,7 +260,7 @@ final case class VisitView(visit: Visit, isEditingVar: Var[Boolean] = Var(false)
         cls("flex justify-between items-start"),
         div(
           div(Components.formatDate(visit.date)),
-          div("Dr. Michelle Chaudry")
+          child.text <-- $vet.map(_.lastName)
         ),
         button(
           cls("hover:text-gray-600 cursor-pointer"),

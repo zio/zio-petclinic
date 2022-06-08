@@ -1,24 +1,27 @@
 package petclinic
 
 import com.raquo.laminar.api.L._
-import petclinic.Page.HomePage
-import petclinic.models.OwnerId
-
-import java.util.UUID
 
 final case class NavBar() extends Component {
 
   def body: Div =
     div(
       cls("flex items-center font-bold text-xl mb-12"),
-      div("zio-clinic"),
+      div(
+        cls("flex"),
+        img(
+          src("https://raw.githubusercontent.com/zio/zio/master/ZIO.png"),
+          height("30px")
+        ),
+        div(cls("text-gray-700"), "Pet Clinic")
+      ),
       justifyContent.spaceBetween,
       div(
         textTransform.uppercase,
         display.flex,
         fontSize("18px"),
-        navLink("Home", HomePage),
-        navLink("Owners", Page.OwnerPage(OwnerId(UUID.fromString("941e3ad7-cb36-4f5a-ac6e-afc71666b36c")))),
+//        navLink("Home", HomePage),
+        navLink("Owners", Page.OwnersPage),
         navLink("Veterinarians", Page.VeterinariansPage)
       )
     )

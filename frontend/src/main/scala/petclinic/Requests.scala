@@ -12,14 +12,19 @@ import scala.concurrent.Future
 object Requests {
   private val backend: SttpBackend[Future, capabilities.WebSockets] = FetchBackend()
 
-  def getRequest[B: JsonCodec](path: Any*): EventStream[B] = {
+  def getRequest[A: JsonCodec](path: Any*): EventStream[A] = {
     val request = quickRequest.get(uri"http://localhost:8080/$path")
     EventStream.fromFuture(backend.send(request)).map { response =>
-      response.body.fromJson[B] match {
+      response.body.fromJson[A] match {
         case Right(b) => b
         case Left(e)  => throw new Error(s"Error parsing JSON: $e")
       }
     }
+  }
+
+  def deleteRequest(path: Any*): EventStream[Unit] = {
+    val request = quickRequest.delete(uri"http://localhost:8080/$path")
+    EventStream.fromFuture(backend.send(request)).map(_ => ())
   }
 
   def postRequest[In: JsonEncoder, Out: JsonDecoder](body: In)(path: Any*): EventStream[Out] = {
@@ -51,20 +56,41 @@ object Requests {
   def updatePet(petId: PetId, updatePet: UpdatePet): EventStream[Unit] =
     patchRequest[UpdatePet, Unit](updatePet)("pets", petId.id)
 
+  def deletePet(petId: PetId): EventStream[Unit] =
+    deleteRequest("pets", petId.id)
+
   def getOwner(id: OwnerId): EventStream[Owner] =
     getRequest[Owner]("owners", id.id)
+
+  def getAllOwners: EventStream[List[Owner]] =
+    getRequest[List[Owner]]("owners")
 
   def getVisits(petId: PetId): EventStream[List[Visit]] =
     getRequest[List[Visit]]("pets", petId.id, "visits")
 
-  def addOwner(owner: Owner): EventStream[Owner] =
-    postRequest[Owner, Owner](owner)("owners")
+  def addOwner(createOwner: CreateOwner): EventStream[Owner] =
+    postRequest[CreateOwner, Owner](createOwner)("owners")
+
+  def updateOwner(ownerId: OwnerId, updateOwner: UpdateOwner): EventStream[Unit] =
+    patchRequest[UpdateOwner, Unit](updateOwner)("owners", ownerId.id)
+
+  def deleteOwner(ownerId: OwnerId): EventStream[Unit] =
+    deleteRequest("owners", ownerId.id)
 
   def addVisit(petId: PetId, createVisit: CreateVisit): EventStream[Visit] =
     postRequest[CreateVisit, Visit](createVisit)("pets", petId.id, "visits")
 
   def updateVisit(visitId: VisitId, updateVisit: UpdateVisit): EventStream[Unit] =
     patchRequest[UpdateVisit, Unit](updateVisit)("visits", visitId.id)
+
+  def deleteVisit(visitId: VisitId): EventStream[Unit] =
+    deleteRequest("visits", visitId.id)
+
+  def getAllVets: EventStream[List[Vet]] =
+    getRequest[List[Vet]]("veterinarians")
+
+  def getVet(vetId: VetId): EventStream[Vet] =
+    getRequest[Vet]("veterinarians", vetId.id)
 
   implicit lazy val unitDecoder: JsonDecoder[Unit] =
     new JsonDecoder[Unit] {
