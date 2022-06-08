@@ -70,8 +70,12 @@ case class OwnerIndexView() extends Component {
         cls("text-sm text-gray-400 mb-2 mt-6"),
         "Recently Added Owners"
       ),
-      children <-- $owners.split(_.id) { (_, owner, _) =>
-        OwnerLinkView(owner)
+      children <-- $owners.splitTransition(_.id) { (_, owner, _, t) =>
+        div(
+          OwnerLinkView(owner),
+          t.height,
+          t.opacity
+        )
       }
     )
 }
@@ -94,9 +98,7 @@ case class OwnerLinkView(owner: Owner) extends Component {
         onClick --> { _ =>
           Router.router.pushState(Page.OwnerPage(owner.id))
         }
-      ),
-      Transitions.heightDynamic(appeared.signal.composeChanges(_.delay(200))),
-      Transitions.opacity(appeared.signal.composeChanges(_.delay(200)))
+      )
     )
 
 }

@@ -6,15 +6,14 @@ import petclinic.views._
 object MainPage {
   def body: Div =
     div(
-      minHeight("100vh"),
-      cls("bg-gray-100"),
+      cls("h-screen flex flex-col"),
+      fontFamily("Inter, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue"),
+      cls("text-gray-900"),
+      NavBar(),
       div(
-        fontFamily("Inter, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue"),
-        cls("p-8 text-gray-900"),
-        NavBar(),
+        cls("flex-grow sm:flex sm:justify-center"),
         div(
-          maxWidth("750px"),
-          margin("0 auto"),
+          cls("flex-grow max-w-screen-md"),
           child <-- Router.router.$currentPage.map {
             case Page.OwnersPage         => OwnerIndexView()
             case Page.OwnerPage(ownerId) => OwnerViewWrapper(ownerId)
@@ -22,6 +21,7 @@ object MainPage {
             case Page.VeterinariansPage  => VetIndexView()
           }
         )
-      )
+      ),
+      Footer()
     )
 }

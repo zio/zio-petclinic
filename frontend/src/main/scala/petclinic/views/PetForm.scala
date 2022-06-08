@@ -23,8 +23,8 @@ final case class PetForm(
     birthdateVar.set(maybePet.map(_.birthdate).getOrElse(LocalDate.now()))
   }
 
-  def body: Div =
-    div(
+  def body: HtmlElement =
+    form(
       onMountCallback { _ =>
         resetPet()
       },
@@ -96,17 +96,21 @@ final case class PetForm(
         div(
           cls("flex items-center"),
           maybePet.map { pet =>
-            Button(
-              "Delete",
-              ButtonConfig.delete,
-              { () =>
-                Requests
-                  .deletePet(pet.id)
-                  .foreach { _ =>
-                    reloadPets()
-                  }(unsafeWindowOwner)
-                showVar.set(false)
-              }
+            div(
+              cls("flex"),
+              Button(
+                "Delete",
+                ButtonConfig.delete,
+                { () =>
+                  Requests
+                    .deletePet(pet.id)
+                    .foreach { _ =>
+                      reloadPets()
+                    }(unsafeWindowOwner)
+                  showVar.set(false)
+                }
+              ),
+              div(cls("w-4"))
             )
           },
           Button(
@@ -117,6 +121,7 @@ final case class PetForm(
               showVar.set(false)
             }
           ),
+          div(cls("w-4")),
           Button(
             "Save",
             ButtonConfig.success,
@@ -157,7 +162,8 @@ final case class PetForm(
               }
 
               showVar.set(false)
-            }
+            },
+            isSubmit = true
           )
         )
       ),
@@ -166,6 +172,10 @@ final case class PetForm(
         height("1px"),
         background("#000000"),
         opacity(0.1)
-      )
+      ),
+      div(cls("h-8")),
+      onSubmit --> { e =>
+        e.preventDefault()
+      }
     )
 }

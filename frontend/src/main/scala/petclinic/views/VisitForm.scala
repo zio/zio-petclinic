@@ -21,8 +21,8 @@ final case class VisitForm(
     descriptionVar.set(visit.map(_.description).getOrElse(""))
   }
 
-  def body =
-    div(
+  def body: HtmlElement =
+    form(
       onMountCallback { _ =>
         resetVisit()
       },
@@ -67,32 +67,37 @@ final case class VisitForm(
           )
         ),
         div(
-          cls("flex items-center"),
+          cls("flex items-center justify-end"),
           visit.map { visit =>
-            Button(
-              "Delete",
-              ButtonConfig.delete,
-              { () =>
-                Requests
-                  .deleteVisit(visit.id)
-                  .foreach { _ =>
-                    reloadVisits()
-                  }(unsafeWindowOwner)
-                showVar.set(false)
-              }
+            div(
+              cls("flex"),
+              Button(
+                "Delete",
+                ButtonConfig.delete.small,
+                { () =>
+                  Requests
+                    .deleteVisit(visit.id)
+                    .foreach { _ =>
+                      reloadVisits()
+                    }(unsafeWindowOwner)
+                  showVar.set(false)
+                }
+              ),
+              div(cls("w-2"))
             )
           },
           Button(
             "Cancel",
-            ButtonConfig.normal,
+            ButtonConfig.normal.small,
             { () =>
               resetVisit()
               showVar.set(false)
             }
           ),
+          div(cls("w-2")),
           Button(
             "Save",
-            ButtonConfig.success,
+            ButtonConfig.success.small,
             { () =>
               val date        = dateVar.now()
               val description = descriptionVar.now()
@@ -124,9 +129,13 @@ final case class VisitForm(
               }
 
               showVar.set(false)
-            }
+            },
+            isSubmit = true
           )
         )
-      )
+      ),
+      onSubmit --> { e =>
+        e.preventDefault()
+      }
     )
 }

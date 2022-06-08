@@ -14,11 +14,13 @@ final case class EditableOwnerView(owner: Owner, reload: () => Unit) extends Com
     div(
       div(
         OwnerForm(Some(owner), isEditingVar, reload),
-        Transitions.heightDynamic(isEditingVar.signal)
+        Transitions.heightDynamic(isEditingVar.signal),
+        Transitions.opacity(isEditingVar.signal)
       ),
       div(
         OwnerView(owner, isEditingVar),
-        Transitions.heightDynamic(isEditingVar.signal.map(!_))
+        Transitions.heightDynamic(isEditingVar.signal.map(!_)),
+        Transitions.opacity(isEditingVar.signal.map(!_))
       )
     )
 }
@@ -49,10 +51,12 @@ final case class OwnerView(owner: Owner, isEditingVar: Var[Boolean]) extends Com
   val reloadOwnerBus: EventBus[Unit] =
     new EventBus[Unit]
 
-  val $pets: EventStream[List[Pet]] =
-    reloadPetBus.events.flatMap { _ =>
-      Requests.getPets(owner.id)
-    }
+  val $pets: Signal[List[Pet]] =
+    reloadPetBus.events
+      .flatMap { _ =>
+        Requests.getPets(owner.id)
+      }
+      .toSignal(List.empty)
 
   val $owner: EventStream[Owner] =
     reloadOwnerBus.events.flatMap { _ =>
