@@ -22,8 +22,9 @@ object ClinicServer extends ZIOAppDefault {
 
   override val run: ZIO[Any, Throwable, Unit] = {
     for {
-      _ <- Migrations.migrate
-      _ <- Server.start(8080, handledApp @@ Middleware.cors())
+      _    <- Migrations.migrate
+      port <- System.envOrElse("PORT", "8080").map(_.toInt)
+      _    <- Server.start(port, handledApp @@ Middleware.cors())
     } yield ()
   }
     .provide(

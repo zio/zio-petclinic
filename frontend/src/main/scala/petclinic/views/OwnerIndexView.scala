@@ -29,7 +29,7 @@ case class OwnerIndexView() extends Component {
 
   val $owners: Signal[List[Owner]] =
     searchQueryVar.signal.combineWithFn($loadedOwners) { (query, owners) =>
-      if (query.isBlank) owners
+      if (query.trim.isEmpty) owners
       else owners.filter(_.fullName.toLowerCase.contains(query.toLowerCase))
     }
 
