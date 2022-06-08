@@ -10,10 +10,10 @@ import java.util.UUID
 sealed trait Page
 
 object Page {
-  case object OwnersPage            extends Page
-  case class OwnerPage(id: OwnerId) extends Page
-  case object HomePage              extends Page
-  case object VeterinariansPage     extends Page
+  case object OwnersPage                  extends Page
+  final case class OwnerPage(id: OwnerId) extends Page
+  case object HomePage                    extends Page
+  case object VeterinariansPage           extends Page
 
   implicit val codec: JsonCodec[Page] = DeriveJsonCodec.gen[Page]
 }

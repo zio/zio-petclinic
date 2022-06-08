@@ -3,7 +3,8 @@ package petclinic.views
 import animus.Transitions
 import com.raquo.laminar.api.L.{Owner => _, _}
 import petclinic.models._
-import petclinic.views.Components.labeled
+import petclinic.views.components.Components
+import petclinic.views.components.Components.labeled
 import petclinic.{Component, Style}
 
 final case class EditablePetView(pet: Pet, reloadPets: () => Unit) extends Component {

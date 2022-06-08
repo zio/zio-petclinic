@@ -12,7 +12,7 @@ VALUES ('Dr. Baloo', 'Cardiology'),
 INSERT INTO owner (first_name, last_name, address, phone, email)
 VALUES ('Emily', 'Elizabeth', '1 Birdwell Island, New York, NY', '212-215-1928', 'emily@bigreddog.com'),
        ('Sherlock', 'Holmes', '221B Baker St, London, England, UK', '+44-20-7224-3688', 'sherlock@sherlockholmes.com'),
-       ('Arable', 'Farm', 'Arable Farm, Brooklin, ME', '207-711-1899', 'fern@charlottesweb.com'),
+       ('Fern', 'Arable', 'Arable Farm, Brooklin, ME', '207-711-1899', 'fern@charlottesweb.com'),
        ('Jon', 'Arbuckle', '711 Maple St, Muncie, IN', '812-728-1945', 'jon@garfield.com'),
        ('Elizabeth', 'Hunter', 'Ontario, Canada', '807-511-1918', 'elizabeth@incrediblejourney.com'),
        ('Peter', 'Hunter', 'Ontario, Canada', '807-511-1918', 'peter@incrediblejourney.com'),
