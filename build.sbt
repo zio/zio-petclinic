@@ -44,6 +44,12 @@ lazy val backend = (project in file("backend"))
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
   .settings(sharedSettings)
+  .enablePlugins(FlywayPlugin)
+  .settings(
+    flywayUrl      := "jdbc:postgresql://localhost:5432/olive",
+    flywayUser     := "postgres",
+    flywayPassword := ""
+  )
   .dependsOn(shared)
 
 lazy val frontend = (project in file("frontend"))
