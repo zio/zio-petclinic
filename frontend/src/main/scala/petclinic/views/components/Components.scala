@@ -1,4 +1,4 @@
-package petclinic.views
+package petclinic.views.components
 
 import com.raquo.laminar.api.L._
 
