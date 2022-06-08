@@ -218,14 +218,10 @@ case class OwnerIndexView() extends Component {
             )
           )
         ),
-        button(
-          div(
-            cls("p-1 px-2 rounded bg-gray-200 text-gray-500 mb-4 hover:text-gray-400"),
-            "Add Owner"
-          ),
-          onClick --> { _ =>
-            showNewOwnerFormVar.update(!_)
-          }
+        Button(
+          "Add Owner",
+          ButtonConfig.gray.small,
+          () => showNewOwnerFormVar.update(!_)
         ),
         overflowY.hidden,
         height <-- showNewOwnerFormVar.signal

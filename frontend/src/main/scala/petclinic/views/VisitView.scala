@@ -192,21 +192,19 @@ final case class NewVisitForm(pet: Pet, showVar: Var[Boolean], refreshVisits: ()
       ),
       div(
         cls("flex items-center"),
-        button(
-          cls("p-2 px-4 bg-gray-100 text-gray-500 border border-gray-300 rounded-sm mr-2"),
-          cls("hover:text-gray-400"),
+        Button(
           "Cancel",
-          onClick --> { _ =>
+          ButtonConfig.normal,
+          { () =>
             dateVar.set(LocalDate.now())
             descriptionVar.set("")
             showVar.set(false)
           }
         ),
-        button(
-          cls("p-2 px-4 text-orange-100 bg-orange-600 font-bold rounded-sm"),
-          cls("hover:bg-orange-500"),
+        Button(
           "Save",
-          onClick --> { _ =>
+          ButtonConfig.success,
+          { () =>
             val date        = dateVar.now()
             val description = descriptionVar.now()
 

@@ -125,24 +125,36 @@ final case class EditOwnerForm(owner: Owner, showVar: Var[Boolean], reload: () =
         ),
         div(
           cls("flex items-center justify-end"),
-          button(
-            cls("p-2 px-4 text-red-500 border border-red-300 text-lg mr-6"),
-            cls("hover:text-red-400"),
+//          button(
+//            cls("p-2 px-4 text-red-500 border border-red-300 text-lg mr-6"),
+//            cls("hover:text-red-400"),
+//            "Delete",
+//            onClick --> { _ =>
+//              Requests
+//                .deleteOwner(owner.id)
+//                .foreach { _ =>
+//                  Router.router.pushState(Page.OwnersPage)
+//                }(unsafeWindowOwner)
+//              showVar.set(false)
+//            }
+//          ),
+          Button(
             "Delete",
-            onClick --> { _ =>
+            ButtonConfig.delete,
+            () => {
               Requests
                 .deleteOwner(owner.id)
                 .foreach { _ =>
                   Router.router.pushState(Page.OwnersPage)
                 }(unsafeWindowOwner)
               showVar.set(false)
+
             }
           ),
-          button(
-            cls("p-2 px-4 bg-gray-100 text-gray-500 border border-gray-300 text-lg rounded-sm mr-6"),
-            cls("hover:text-gray-400"),
+          Button(
             "Cancel",
-            onClick --> { _ =>
+            ButtonConfig.normal,
+            () => {
               firstNameVar.set(owner.firstName)
               lastNameVar.set(owner.lastName)
               emailVar.set(owner.email)
@@ -151,11 +163,10 @@ final case class EditOwnerForm(owner: Owner, showVar: Var[Boolean], reload: () =
               showVar.set(false)
             }
           ),
-          button(
-            cls("p-2 px-4 text-orange-100 bg-orange-600 text-lg font-bold rounded-sm"),
-            cls("hover:bg-orange-500"),
+          Button(
             "Save",
-            onClick --> { _ =>
+            ButtonConfig.success,
+            () => {
               val firstName = firstNameVar.now()
               val lastName  = lastNameVar.now()
               val email     = emailVar.now()
@@ -266,26 +277,14 @@ case class OwnerView(owner: Owner, isEditingVar: Var[Boolean]) extends Component
         )
       ),
       div(
-        button(
-          div(
-            cls("p-1 px-2 rounded bg-gray-200 text-gray-500 mb-4 hover:text-gray-400"),
-            "Add Pet"
-          ),
-          onClick --> { _ =>
-            showNewPetFormVar.update(!_)
-          },
-          Transitions.height(showNewPetFormVar.signal.map(!_)),
-          Transitions.opacity(showNewPetFormVar.signal.map(!_))
+        div(
+          cls("flex"),
+          Button("Add Pet", ButtonConfig.gray.small, () => showNewPetFormVar.update(!_)),
+          div(cls("w-4")),
+          Button("Edit", ButtonConfig.gray.small, () => isEditingVar.set(true))
         ),
-        button(
-          div(
-            cls("p-1 px-2 rounded bg-gray-200 text-gray-500 mb-4 ml-4 hover:text-gray-400"),
-            "Edit"
-          ),
-          onClick --> { _ =>
-            isEditingVar.set(true)
-          }
-        )
+        Transitions.height(showNewPetFormVar.signal.map(!_)),
+        Transitions.opacity(showNewPetFormVar.signal.map(!_))
       )
     ),
     div(
@@ -303,7 +302,7 @@ case class OwnerView(owner: Owner, isEditingVar: Var[Boolean]) extends Component
     div(
       Transitions.height(showNewPetFormVar.signal),
       Transitions.opacity(showNewPetFormVar.signal),
-      NewPetForm(owner, showNewPetFormVar, () => reloadPetBus.emit(()))
+      PetForm(owner.id, None, showNewPetFormVar, () => reloadPetBus.emit(()))
     ),
     div(cls("h-8")),
     children <-- $pets.map { pets =>
