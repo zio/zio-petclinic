@@ -98,38 +98,39 @@ final case class VisitForm(
           Button(
             "Save",
             ButtonConfig.success.small,
-            { () =>
-              val date        = dateVar.now()
-              val description = descriptionVar.now()
+            () =>
+              if (showVar.now()) {
+                val date        = dateVar.now()
+                val description = descriptionVar.now()
 
-              visit match {
-                case Some(visit) =>
-                  Requests
-                    .updateVisit(
-                      visit.id,
-                      UpdateVisit(
-                        date = Some(date),
-                        description = Some(description),
-                        petId = visit.petId
+                visit match {
+                  case Some(visit) =>
+                    Requests
+                      .updateVisit(
+                        visit.id,
+                        UpdateVisit(
+                          date = Some(date),
+                          description = Some(description),
+                          petId = visit.petId
+                        )
                       )
-                    )
-                    .foreach { _ =>
-                      reloadVisits()
-                    }(unsafeWindowOwner)
-                case None =>
-                  Requests
-                    .addVisit(
-                      petId,
-                      CreateVisit(date, description)
-                    )
-                    .foreach { _ =>
-                      reloadVisits()
-                    }(unsafeWindowOwner)
+                      .foreach { _ =>
+                        reloadVisits()
+                      }(unsafeWindowOwner)
+                  case None =>
+                    Requests
+                      .addVisit(
+                        petId,
+                        CreateVisit(date, description)
+                      )
+                      .foreach { _ =>
+                        reloadVisits()
+                      }(unsafeWindowOwner)
 
-              }
+                }
 
-              showVar.set(false)
-            },
+                showVar.set(false)
+              },
             isSubmit = true
           )
         )

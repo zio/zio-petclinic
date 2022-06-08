@@ -125,44 +125,45 @@ final case class PetForm(
           Button(
             "Save",
             ButtonConfig.success,
-            { () =>
-              val name      = petNameVar.now()
-              val species   = speciesVar.now()
-              val birthdate = birthdateVar.now()
+            () =>
+              if (showVar.now()) {
+                val name      = petNameVar.now()
+                val species   = speciesVar.now()
+                val birthdate = birthdateVar.now()
 
-              maybePet match {
-                case Some(pet) =>
-                  Requests
-                    .updatePet(
-                      pet.id,
-                      UpdatePet(
-                        name = Some(name),
-                        birthdate = Some(birthdate),
-                        species = Some(species),
-                        ownerId = None
+                maybePet match {
+                  case Some(pet) =>
+                    Requests
+                      .updatePet(
+                        pet.id,
+                        UpdatePet(
+                          name = Some(name),
+                          birthdate = Some(birthdate),
+                          species = Some(species),
+                          ownerId = None
+                        )
                       )
-                    )
-                    .foreach { _ =>
-                      reloadPets()
-                    }(unsafeWindowOwner)
-                case None =>
-                  Requests
-                    .addPet(
-                      CreatePet(
-                        name,
-                        birthdate,
-                        species,
-                        ownerId
+                      .foreach { _ =>
+                        reloadPets()
+                      }(unsafeWindowOwner)
+                  case None =>
+                    Requests
+                      .addPet(
+                        CreatePet(
+                          name,
+                          birthdate,
+                          species,
+                          ownerId
+                        )
                       )
-                    )
-                    .foreach { _ =>
-                      reloadPets()
-                    }(unsafeWindowOwner)
+                      .foreach { _ =>
+                        reloadPets()
+                      }(unsafeWindowOwner)
 
-              }
+                }
 
-              showVar.set(false)
-            },
+                showVar.set(false)
+              },
             isSubmit = true
           )
         )

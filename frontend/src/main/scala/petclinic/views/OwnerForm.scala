@@ -173,6 +173,9 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
     )
 
   private def handleSave(): Unit = {
+    if (!showVar.now())
+      return
+
     val firstName = firstNameVar.now()
     val lastName  = lastNameVar.now()
     val email     = emailVar.now()
