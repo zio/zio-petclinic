@@ -6,7 +6,7 @@ case class Footer() extends Component {
   def body =
     div(
       cls(
-        "sticky bottom-0 p-4 px-8 w-full bg-gray-200"
+        "sticky bottom-0 p-4 px-8 w-full bg-gray-200 whitespace-nowrap"
       ),
       div(
         cls(
@@ -14,7 +14,7 @@ case class Footer() extends Component {
         ),
         div(
           cls("text-gray-600 text-sm italic"),
-          "⚠️ Data will Reset Every 10 minutes"
+          "⚠️ Data Will Reset Every 15 Minutes"
         ),
         div(
           cls("flex"),

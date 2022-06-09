@@ -73,7 +73,7 @@ case class OwnerIndexView() extends Component {
       children <-- $owners.splitTransition(_.id) { (_, owner, _, t) =>
         div(
           OwnerLinkView(owner),
-          t.height,
+          Transitions.heightDynamic(t.$isActive),
           t.opacity
         )
       }
