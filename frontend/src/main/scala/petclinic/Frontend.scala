@@ -6,15 +6,6 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.`import`
 
-// TODO:
-//  - Continue to refactor edit/new forms
-//    √ Pet
-//    - Owner
-//    - Visit
-//  - Continue to refactor buttons
-//    - Search for all remaining `button` tags
-//  - Create more Fixture Data
-
 object Frontend {
 
   def main(args: Array[String]): Unit =
