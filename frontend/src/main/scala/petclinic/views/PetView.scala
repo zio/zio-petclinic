@@ -32,7 +32,7 @@ final case class PetView(pet: Pet, isEditingVar: Var[Boolean]) extends Component
         cls("grid grid-cols-2"),
         div(
           div(
-            cls("text-sm text-gray-400 mb-1"),
+            Style.header,
             "Pet Name"
           ),
           div(

@@ -72,11 +72,11 @@ final case class OwnerView(owner: Owner, isEditingVar: Var[Boolean]) extends Com
       cls("flex justify-between items-start"),
       div(
         div(
-          cls("text-sm text-gray-400 mb-1"),
+          Style.header,
           "Owner"
         ),
         div(
-          cls("text-4xl text-orange-600 mb-4"),
+          Style.boldHeader,
           Style.serifFont,
           s"${owner.firstName} ${owner.lastName}"
         )

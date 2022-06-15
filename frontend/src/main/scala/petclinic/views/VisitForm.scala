@@ -3,7 +3,7 @@ package petclinic.views
 import com.raquo.laminar.api.L._
 import petclinic.models.{CreateVisit, PetId, UpdateVisit, Visit}
 import petclinic.views.components.{Button, ButtonConfig}
-import petclinic.{Component, Requests}
+import petclinic.{Component, Requests, Style}
 
 import java.time.LocalDate
 
@@ -28,7 +28,7 @@ final case class VisitForm(
       },
       cls("p-2 bg-gray-200 rounded-sm mb-4"),
       div(
-        cls("text-sm text-gray-400 mb-1"),
+        Style.header,
         "Date"
       ),
       input(
@@ -49,7 +49,7 @@ final case class VisitForm(
       div(
         cls("mt-4"),
         div(
-          cls("text-sm text-gray-400 mb-1"),
+          Style.header,
           "Description"
         ),
         div(
