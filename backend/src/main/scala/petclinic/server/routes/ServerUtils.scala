@@ -1,6 +1,6 @@
 package petclinic.server.routes
 
-import petclinic.models.{PetId, VetId, VisitId}
+import petclinic.models.{OwnerId, PetId, VetId, VisitId}
 import zhttp.http.Request
 import zio.json._
 import zio.{IO, ZIO}
@@ -16,8 +16,11 @@ object ServerUtils {
     PetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
 
   def parseVisitId(id: String): IO[AppError.JsonDecodingError, VisitId] =
-    VisitId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
+    VisitId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid visit id"))
 
   def parseVetId(id: String): IO[AppError.JsonDecodingError, VetId] =
     VetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid vet id"))
+
+  def parseOwnerId(id: String): IO[AppError.JsonDecodingError, OwnerId] =
+    OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
 }

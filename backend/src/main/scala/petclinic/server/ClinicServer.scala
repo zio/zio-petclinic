@@ -1,12 +1,10 @@
 package petclinic.server
 
-import petclinic.{Migrations, QuillContext}
 import petclinic.services._
-import zhttp.service.Server
+import petclinic.{Migrations, QuillContext}
 import zhttp.http._
+import zhttp.service.Server
 import zio._
-
-import java.time.LocalDate
 
 object ClinicServer extends ZIOAppDefault {
 

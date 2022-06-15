@@ -25,19 +25,22 @@ cd zio-petclinic
 
 Next, open three terminal windows or panes and run the following commands:
 
-Pane 1
+**Pane 1**
+*Installs frontend dependencies and runs the development server*
 ```shell
 yarn install
 yarn exec vite
 ```
 
-Pane 2
+**Pane 2**
+*Compiles and runs the http server*
 ```shell
 sbt
 ~ backend/reStart
 ```
 
-Pane 3
+**Pane 3**
+*Compiles the frontend JavaScript*
 ```shell
 sbt
 ~ frontend/fastLinkJS
