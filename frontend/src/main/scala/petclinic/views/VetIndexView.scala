@@ -11,6 +11,7 @@ case class VetIndexView() extends Component {
 
   def body =
     div(
+      cls("w-full"),
       table(
         cls("table-auto w-full"),
         thead(

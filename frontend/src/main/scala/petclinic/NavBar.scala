@@ -6,7 +6,7 @@ final case class NavBar() extends Component {
 
   def body: Div =
     div(
-      cls("flex items-center font-bold text-xl mb-12"),
+      cls("flex items-center font-bold text-xl mb-12 p-8"),
       div(
         cls("flex"),
         img(
@@ -20,9 +20,8 @@ final case class NavBar() extends Component {
         textTransform.uppercase,
         display.flex,
         fontSize("18px"),
-//        navLink("Home", HomePage),
         navLink("Owners", Page.OwnersPage),
-        navLink("Veterinarians", Page.VeterinariansPage)
+        navLink("Vets", Page.VeterinariansPage)
       )
     )
 
