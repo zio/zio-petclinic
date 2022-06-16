@@ -21,8 +21,8 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
     addressVar.set(maybeOwner.map(_.address).getOrElse(""))
   }
 
-  def body: Div =
-    div(
+  def body: HtmlElement =
+    form(
       onMountCallback { _ =>
         resetOwner()
       },
@@ -138,73 +138,81 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
         div(
           cls("flex items-center justify-end"),
           maybeOwner.map { owner =>
-            Button(
-              "Delete",
-              ButtonConfig.delete,
-              { () =>
-                Requests
-                  .deleteOwner(owner.id)
-                  .foreach { _ =>
-                    Router.router.pushState(Page.OwnersPage)
-                  }(unsafeWindowOwner)
-                showVar.set(false)
-              }
+            div(
+              cls("flex"),
+              Button(
+                "Delete",
+                ButtonConfig.delete,
+                { () =>
+                  Requests
+                    .deleteOwner(owner.id)
+                    .foreach { _ =>
+                      Router.router.pushState(Page.OwnersPage)
+                    }(unsafeWindowOwner)
+                  showVar.set(false)
+                }
+              ),
+              div(cls("w-4"))
             )
           },
           Button(
             "Cancel",
             ButtonConfig.normal,
-            { () =>
-              reloadOwner()
-              showVar.set(false)
-            }
+            () => showVar.set(false)
           ),
+          div(cls("w-4")),
           Button(
             "Save",
             ButtonConfig.success,
-            { () =>
-              val firstName = firstNameVar.now()
-              val lastName  = lastNameVar.now()
-              val email     = emailVar.now()
-              val phone     = phoneVar.now()
-              val address   = addressVar.now()
-
-              maybeOwner match {
-                case Some(owner) =>
-                  Requests
-                    .updateOwner(
-                      owner.id,
-                      UpdateOwner(
-                        firstName = Some(firstName),
-                        lastName = Some(lastName),
-                        address = Some(address),
-                        phone = Some(phone),
-                        email = Some(email)
-                      )
-                    )
-                    .foreach { _ =>
-                      reloadOwner()
-                    }(unsafeWindowOwner)
-                case None =>
-                  Requests
-                    .addOwner(
-                      CreateOwner(
-                        firstName = firstName,
-                        lastName = lastName,
-                        address = address,
-                        phone = phone,
-                        email = email
-                      )
-                    )
-                    .foreach { - =>
-                      reloadOwner()
-                    }(unsafeWindowOwner)
-              }
-              showVar.set(false)
-            }
+            () => handleSave(),
+            isSubmit = true
           )
         )
-      )
+      ),
+      onSubmit --> { e => e.preventDefault() }
     )
 
+  private def handleSave(): Unit = {
+    if (!showVar.now())
+      return
+
+    val firstName = firstNameVar.now()
+    val lastName  = lastNameVar.now()
+    val email     = emailVar.now()
+    val phone     = phoneVar.now()
+    val address   = addressVar.now()
+
+    maybeOwner match {
+      case Some(owner) =>
+        Requests
+          .updateOwner(
+            owner.id,
+            UpdateOwner(
+              firstName = Some(firstName),
+              lastName = Some(lastName),
+              address = Some(address),
+              phone = Some(phone),
+              email = Some(email)
+            )
+          )
+          .foreach { _ =>
+            reloadOwner()
+          }(unsafeWindowOwner)
+      case None =>
+        Requests
+          .addOwner(
+            CreateOwner(
+              firstName = firstName,
+              lastName = lastName,
+              address = address,
+              phone = phone,
+              email = email
+            )
+          )
+          .foreach { - =>
+            reloadOwner()
+          }(unsafeWindowOwner)
+    }
+    showVar.set(false)
+  }
 }

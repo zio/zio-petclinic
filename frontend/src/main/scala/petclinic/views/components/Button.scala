@@ -4,9 +4,15 @@ import com.raquo.laminar.api.L._
 import petclinic.Component
 import ButtonConfig.{ButtonStyle, ButtonSize}
 
-final case class Button(name: String, config: ButtonConfig, handleClick: () => Unit) extends Component {
+final case class Button(name: String, config: ButtonConfig, handleClick: () => Unit, isSubmit: Boolean = false)
+    extends Component {
   def body: HtmlElement =
-    button(config.classes, name, onClick --> { _ => handleClick() })
+    button(
+      config.classes,
+      name,
+      onClick --> { _ => handleClick() },
+      `type`(if (isSubmit) "submit" else "button")
+    )
 }
 
 final case class ButtonConfig(style: ButtonStyle, size: ButtonSize) {
@@ -47,8 +53,8 @@ object ButtonConfig {
   sealed trait ButtonSize extends Product with Serializable { self =>
     def classes: Mod[HtmlElement] =
       self match {
-        case ButtonSize.Small  => cls("p-1 px-2 text-normal ml-2")
-        case ButtonSize.Medium => cls("p-2 px-4 text-lg ml-6")
+        case ButtonSize.Small  => cls("p-1 px-2 text-normal")
+        case ButtonSize.Medium => cls("p-2 px-4 text-lg")
       }
   }
 
