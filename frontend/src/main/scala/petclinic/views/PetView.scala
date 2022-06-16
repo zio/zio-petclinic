@@ -14,11 +14,13 @@ final case class EditablePetView(pet: Pet, reloadPets: () => Unit) extends Compo
     div(
       div(
         PetForm(pet.ownerId, Some(pet), isEditingVar, reloadPets),
-        Transitions.heightDynamic(isEditingVar.signal)
+        Transitions.heightDynamic(isEditingVar.signal),
+        Transitions.opacity(isEditingVar.signal)
       ),
       div(
         PetView(pet, isEditingVar),
-        Transitions.heightDynamic(isEditingVar.signal.map(!_))
+        Transitions.heightDynamic(isEditingVar.signal.map(!_)),
+        Transitions.opacity(isEditingVar.signal.map(!_))
       )
     )
 }

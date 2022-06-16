@@ -1,12 +1,10 @@
 package petclinic.server
 
-import petclinic.{Migrations, QuillContext}
 import petclinic.services._
-import zhttp.service.Server
+import petclinic.{Migrations, QuillContext}
 import zhttp.http._
+import zhttp.service.Server
 import zio._
-
-import java.time.LocalDate
 
 object ClinicServer extends ZIOAppDefault {
 
@@ -22,8 +20,11 @@ object ClinicServer extends ZIOAppDefault {
 
   override val run: ZIO[Any, Throwable, Unit] = {
     for {
-      _ <- Migrations.migrate
-      _ <- Server.start(8080, handledApp @@ Middleware.cors())
+      // Reset the database to the initial state every 15 minutes
+      // to clean up the deployed heroku data.
+      _    <- Migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
+      port <- System.envOrElse("PORT", "8080").map(_.toInt)
+      _    <- Server.start(port, handledApp @@ Middleware.cors())
     } yield ()
   }
     .provide(

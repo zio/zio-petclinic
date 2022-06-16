@@ -2,6 +2,7 @@ package petclinic
 
 import petclinic.models._
 import com.raquo.laminar.api.L.{Owner => _, _}
+import org.scalajs.dom.document
 import sttp.capabilities
 import sttp.client3._
 import zio.json._
@@ -12,8 +13,14 @@ import scala.concurrent.Future
 object Requests {
   private val backend: SttpBackend[Future, capabilities.WebSockets] = FetchBackend()
 
+  private val baseUrl =
+    if (document.location.host.contains("localhost"))
+      uri"http://localhost:8080"
+    else
+      uri"https://lit-harbor-84927.herokuapp.com"
+
   def getRequest[A: JsonCodec](path: Any*): EventStream[A] = {
-    val request = quickRequest.get(uri"http://localhost:8080/$path")
+    val request = quickRequest.get(uri"$baseUrl/$path")
     EventStream.fromFuture(backend.send(request)).map { response =>
       response.body.fromJson[A] match {
         case Right(b) => b
@@ -23,12 +30,12 @@ object Requests {
   }
 
   def deleteRequest(path: Any*): EventStream[Unit] = {
-    val request = quickRequest.delete(uri"http://localhost:8080/$path")
+    val request = quickRequest.delete(uri"$baseUrl/$path")
     EventStream.fromFuture(backend.send(request)).map(_ => ())
   }
 
   def postRequest[In: JsonEncoder, Out: JsonDecoder](body: In)(path: Any*): EventStream[Out] = {
-    val request = quickRequest.post(uri"http://localhost:8080/$path").body(body.toJson)
+    val request = quickRequest.post(uri"$baseUrl/$path").body(body.toJson)
     EventStream.fromFuture(backend.send(request)).map { response =>
       response.body.fromJson[Out] match {
         case Right(b) => b
@@ -38,7 +45,7 @@ object Requests {
   }
 
   def patchRequest[In: JsonEncoder, Out: JsonDecoder](body: In)(path: Any*): EventStream[Out] = {
-    val request = quickRequest.patch(uri"http://localhost:8080/$path").body(body.toJson)
+    val request = quickRequest.patch(uri"$baseUrl/$path").body(body.toJson)
     EventStream.fromFuture(backend.send(request)).map { response =>
       response.body.fromJson[Out] match {
         case Right(b) => b
