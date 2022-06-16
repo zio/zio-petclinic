@@ -13,7 +13,7 @@ This app uses:
 ## Getting Started
 
 You can play with the app [here](https://zio-pet-clinic.surge.sh). *Keep in mind that this
-runs on a free Heroku instance, so it might take ~10 seconds to respond the first time. Also, 
+runs on a free Heroku instance, so it might take ~10 seconds to respond the first time. Also,
 all data will be reset every 15 minutes in order to keep it nice and tidy.*
 
 You can also run the app locally. First, open your terminal and clone the project.
