@@ -23,8 +23,8 @@ final case class PetForm(
     birthdateVar.set(maybePet.map(_.birthdate).getOrElse(LocalDate.now()))
   }
 
-  def body: Div =
-    div(
+  def body: HtmlElement =
+    form(
       onMountCallback { _ =>
         resetPet()
       },
@@ -96,17 +96,21 @@ final case class PetForm(
         div(
           cls("flex items-center"),
           maybePet.map { pet =>
-            Button(
-              "Delete",
-              ButtonConfig.delete,
-              { () =>
-                Requests
-                  .deletePet(pet.id)
-                  .foreach { _ =>
-                    reloadPets()
-                  }(unsafeWindowOwner)
-                showVar.set(false)
-              }
+            div(
+              cls("flex"),
+              Button(
+                "Delete",
+                ButtonConfig.delete,
+                { () =>
+                  Requests
+                    .deletePet(pet.id)
+                    .foreach { _ =>
+                      reloadPets()
+                    }(unsafeWindowOwner)
+                  showVar.set(false)
+                }
+              ),
+              div(cls("w-4"))
             )
           },
           Button(
@@ -117,47 +121,50 @@ final case class PetForm(
               showVar.set(false)
             }
           ),
+          div(cls("w-4")),
           Button(
             "Save",
             ButtonConfig.success,
-            { () =>
-              val name      = petNameVar.now()
-              val species   = speciesVar.now()
-              val birthdate = birthdateVar.now()
+            () =>
+              if (showVar.now()) {
+                val name      = petNameVar.now()
+                val species   = speciesVar.now()
+                val birthdate = birthdateVar.now()
 
-              maybePet match {
-                case Some(pet) =>
-                  Requests
-                    .updatePet(
-                      pet.id,
-                      UpdatePet(
-                        name = Some(name),
-                        birthdate = Some(birthdate),
-                        species = Some(species),
-                        ownerId = None
+                maybePet match {
+                  case Some(pet) =>
+                    Requests
+                      .updatePet(
+                        pet.id,
+                        UpdatePet(
+                          name = Some(name),
+                          birthdate = Some(birthdate),
+                          species = Some(species),
+                          ownerId = None
+                        )
                       )
-                    )
-                    .foreach { _ =>
-                      reloadPets()
-                    }(unsafeWindowOwner)
-                case None =>
-                  Requests
-                    .addPet(
-                      CreatePet(
-                        name,
-                        birthdate,
-                        species,
-                        ownerId
+                      .foreach { _ =>
+                        reloadPets()
+                      }(unsafeWindowOwner)
+                  case None =>
+                    Requests
+                      .addPet(
+                        CreatePet(
+                          name,
+                          birthdate,
+                          species,
+                          ownerId
+                        )
                       )
-                    )
-                    .foreach { _ =>
-                      reloadPets()
-                    }(unsafeWindowOwner)
+                      .foreach { _ =>
+                        reloadPets()
+                      }(unsafeWindowOwner)
 
-              }
+                }
 
-              showVar.set(false)
-            }
+                showVar.set(false)
+              },
+            isSubmit = true
           )
         )
       ),
@@ -166,6 +173,10 @@ final case class PetForm(
         height("1px"),
         background("#000000"),
         opacity(0.1)
-      )
+      ),
+      div(cls("h-8")),
+      onSubmit --> { e =>
+        e.preventDefault()
+      }
     )
 }
