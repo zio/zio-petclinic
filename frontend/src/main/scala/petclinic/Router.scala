@@ -21,16 +21,16 @@ object Page {
 object Router {
   import Page._
 
-  val homeRoute =
-    Route.static(OwnersPage, root / endOfSegments)
+  val homeRoute: Route[Page.HomePage.type, Unit] =
+    Route.static(HomePage, root / "home" / endOfSegments)
 
-  val veterinariansRoute =
+  val veterinariansRoute: Route[Page.VeterinariansPage.type, Unit] =
     Route.static(VeterinariansPage, root / "veterinarians" / endOfSegments)
 
-  val ownersRoute =
+  val ownersRoute: Route[Page.OwnersPage.type, Unit] =
     Route.static(OwnersPage, root / "owners" / endOfSegments)
 
-  val ownerRoute = Route(
+  val ownerRoute: Route[OwnerPage, String] = Route(
     encode = (userPage: Page.OwnerPage) => userPage.id.id.toString,
     decode = (id: String) => OwnerPage(OwnerId(UUID.fromString(id))),
     pattern = root / "owners" / segment[String] / endOfSegments

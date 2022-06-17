@@ -69,7 +69,7 @@ final case class VisitView(visit: Visit, isEditingVar: Var[Boolean] = Var(false)
 
   def body =
     div(
-      cls("mb-4 p-2 bg-gray-200 rounded-sm"),
+      cls("mb-2 p-1 pl-2 bg-gray-200 rounded-sm"),
       div(
         cls("text-gray-500 text-sm"),
         cls("flex justify-between items-start"),
