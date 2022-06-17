@@ -4,7 +4,7 @@ import animus.Transitions
 import com.raquo.laminar.api.L.{Owner => _, _}
 import petclinic.models.{CreateVisit, Pet, UpdateVisit, Visit}
 import petclinic.views.components.{Button, ButtonConfig, Components}
-import petclinic.{Component, Requests}
+import petclinic.{Component, Requests, Style}
 
 import java.time.LocalDate
 
@@ -27,7 +27,7 @@ final case class VisitsView(pet: Pet) extends Component {
         refreshVisitsBus.emit(())
       },
       div(
-        cls("text-sm text-gray-400 mb-1"),
+        Style.header,
         "Visits"
       ),
       children <-- $visits.map(_.map(EditableVisitView(_, () => refreshVisitsBus.emit(())))),

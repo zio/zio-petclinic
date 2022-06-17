@@ -30,7 +30,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
         cls("flex"),
         div(
           div(
-            cls("text-sm text-gray-400 mb-1"),
+            Style.header,
             "First Name"
           ),
           div(
@@ -52,7 +52,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
         ),
         div(
           div(
-            cls("text-sm text-gray-400 mb-1"),
+            Style.header,
             "Last Name"
           ),
           div(
@@ -76,7 +76,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
         div(
           div(
             div(
-              cls("text-sm text-gray-400 mb-1"),
+              Style.header,
               "Email"
             ),
             div(
@@ -96,7 +96,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
           ),
           div(
             div(
-              cls("text-sm text-gray-400 mb-1"),
+              Style.header,
               "Phone"
             ),
             div(
@@ -116,7 +116,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
           ),
           div(
             div(
-              cls("text-sm text-gray-400 mb-1"),
+              Style.header,
               "Address"
             ),
             div(

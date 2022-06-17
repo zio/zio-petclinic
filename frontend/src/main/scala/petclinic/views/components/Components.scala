@@ -1,6 +1,7 @@
 package petclinic.views.components
 
 import com.raquo.laminar.api.L._
+import petclinic.Style
 
 import java.time.LocalDate
 
@@ -10,7 +11,7 @@ object Components {
     div(
       cls("mr-8"),
       div(
-        cls("text-sm text-gray-400 mb-1"),
+        Style.header,
         name
       ),
       div(value)

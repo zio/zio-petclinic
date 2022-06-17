@@ -30,7 +30,7 @@ final case class PetForm(
       },
       cls("mt-4"),
       div(
-        cls("text-sm text-gray-400 mb-1"),
+        Style.header,
         "Pet Name"
       ),
       div(
@@ -56,7 +56,7 @@ final case class PetForm(
           div(
             cls("mr-8"),
             div(
-              cls("text-sm text-gray-400 mb-1"),
+              Style.header,
               "Species"
             ),
             div(
@@ -73,7 +73,7 @@ final case class PetForm(
           ),
           div(
             div(
-              cls("text-sm text-gray-400 mb-1"),
+              Style.header,
               "Birthdate"
             ),
             input(
