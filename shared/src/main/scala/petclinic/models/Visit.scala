@@ -27,7 +27,7 @@ final case class Visit(
 
 object Visit {
 
-  def apply(
+  def make(
       petId: PetId,
       date: java.time.LocalDate,
       description: String,

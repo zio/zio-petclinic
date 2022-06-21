@@ -68,7 +68,7 @@ final case class Pet(
 
 object Pet {
 
-  def apply(
+  def make(
       name: String,
       birthdate: java.time.LocalDate,
       species: Species,

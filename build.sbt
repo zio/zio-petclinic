@@ -3,21 +3,33 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
-val zioVersion               = "2.0.0-RC5"
-val zioJsonVersion           = "0.3.0-RC7"
-val zioHttpVersion           = "2.0.0-RC7"
-val zioQuillVersion          = "3.17.0-RC3"
-val postgresVersion          = "42.3.4"
-val flywayVersion            = "8.5.10"
-val zioTestContainersVersion = "0.4.1"
+val zioVersion               = "2.0.0-RC6"
+val zioJsonVersion           = "0.3.0-RC8"
+val zioHttpVersion           = "2.0.0-RC9"
+val zioQuillVersion          = "4.0.0-RC1"
+val postgresVersion          = "42.3.6"
+val flywayVersion            = "8.5.12"
+val zioTestContainersVersion = "0.6.0"
 val laminarVersion           = "0.14.2"
 val animusVersion            = "0.1.12"
+val zioLoggingVersion        = "2.0.0-RC10"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val sharedSettings = Seq(
   libraryDependencies ++= Seq(
     "dev.zio" %%% "zio-json" % zioJsonVersion
+  ),
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding",
+    "utf8",
+    "-feature",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-Xfatal-warnings"
   )
 )
 
@@ -30,15 +42,15 @@ lazy val backend = (project in file("backend"))
     name := "pet-clinic-backend",
     libraryDependencies ++= Seq(
       "dev.zio"               %% "zio"                               % zioVersion,
-      "dev.zio"               %% "zio-test"                          % zioVersion     % Test,
-      "dev.zio"               %% "zio-test-sbt"                      % zioVersion     % Test,
+      "dev.zio"               %% "zio-test"                          % zioVersion % Test,
+      "dev.zio"               %% "zio-test-sbt"                      % zioVersion % Test,
       "io.d11"                %% "zhttp"                             % zioHttpVersion,
-      "io.d11"                %% "zhttp-test"                        % zioHttpVersion % Test,
       "io.getquill"           %% "quill-jdbc-zio"                    % zioQuillVersion,
       "org.postgresql"         % "postgresql"                        % postgresVersion,
       "org.flywaydb"           % "flyway-core"                       % flywayVersion,
       "io.github.scottweaver" %% "zio-2-0-testcontainers-postgresql" % zioTestContainersVersion,
-      "io.github.scottweaver" %% "zio-2-0-db-migration-aspect"       % zioTestContainersVersion
+      "io.github.scottweaver" %% "zio-2-0-db-migration-aspect"       % zioTestContainersVersion,
+      "dev.zio"               %% "zio-logging"                       % zioLoggingVersion
     ),
     Test / fork := true,
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")

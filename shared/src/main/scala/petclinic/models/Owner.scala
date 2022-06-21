@@ -31,7 +31,7 @@ final case class Owner(
 }
 
 object Owner {
-  def apply(firstName: String, lastName: String, address: String, phone: String, email: String): UIO[Owner] =
+  def make(firstName: String, lastName: String, address: String, phone: String, email: String): UIO[Owner] =
     OwnerId.random.map(Owner(_, firstName, lastName, address, phone, email))
 
   implicit val codec: JsonCodec[Owner] =
