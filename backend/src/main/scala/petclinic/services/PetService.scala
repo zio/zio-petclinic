@@ -70,7 +70,7 @@ final case class PetServiceLive(dataSource: DataSource) extends PetService {
 
   override def create(name: String, birthdate: java.time.LocalDate, species: Species, ownerId: OwnerId): Task[Pet] =
     for {
-      pet <- Pet.apply(name, birthdate, species, ownerId)
+      pet <- Pet.make(name, birthdate, species, ownerId)
       _   <- run(query[Pet].insertValue(lift(pet))).provideEnvironment(ZEnvironment(dataSource))
     } yield pet
 
@@ -91,7 +91,6 @@ final case class PetServiceLive(dataSource: DataSource) extends PetService {
   override def getAll: Task[List[Pet]] =
     run(query[Pet].sortBy(_.birthdate))
       .provideEnvironment(ZEnvironment(dataSource))
-      .map(_.toList)
 
   override def update(
       id: PetId,

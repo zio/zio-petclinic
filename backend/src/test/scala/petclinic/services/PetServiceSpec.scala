@@ -4,12 +4,13 @@ import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
 import zio.test._
 import petclinic.models._
+import zio.ZEnv
 
 import java.time.LocalDate
 
 object PetServiceSpec extends ZIOSpecDefault {
 
-  override def spec: ZSpec[TestEnvironment, Throwable] = {
+  override def spec: Spec[TestEnvironment, Throwable] = {
     suite("PetService")(
       suite("added pets exist in db")(
         test("returns true confirming existence of added pet") {
@@ -107,13 +108,15 @@ object PetServiceSpec extends ZIOSpecDefault {
           } yield assertTrue(getPet.get.name == "Hedwig")
         }
       )
-    ) @@ DbMigrationAspect.migrate()()
+    ) @@ DbMigrationAspect.migrateOnce()() @@ TestAspect.withLiveRandom
   }.provideShared(
     PetServiceLive.layer,
     OwnerServiceLive.layer,
     ZPostgreSQLContainer.Settings.default,
     ZPostgreSQLContainer.live,
-    TestContainerLayers.dataSourceLayer
+    TestContainerLayers.dataSourceLayer,
+    Live.default,
+    ZEnv.live
   )
 
 }

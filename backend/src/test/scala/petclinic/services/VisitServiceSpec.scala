@@ -3,13 +3,14 @@ package petclinic.services
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
 import petclinic.models._
+import zio.ZEnv
 import zio.test._
 
 import java.time.LocalDate
 
 object VisitServiceSpec extends ZIOSpecDefault {
 
-  override def spec: ZSpec[TestEnvironment, Throwable] = {
+  override def spec: Spec[TestEnvironment, Throwable] = {
     suite("VisitService")(
       suite("added visits exist in db")(
         test("returns true confirming existence of added visit") {
@@ -112,7 +113,7 @@ object VisitServiceSpec extends ZIOSpecDefault {
           } yield assertTrue(getVisit.get.description == "Two broken wings")
         }
       )
-    ) @@ DbMigrationAspect.migrate()()
+    ) @@ DbMigrationAspect.migrateOnce()() @@ TestAspect.withLiveRandom
   }.provideShared(
     PetServiceLive.layer,
     OwnerServiceLive.layer,
@@ -120,7 +121,9 @@ object VisitServiceSpec extends ZIOSpecDefault {
     ZPostgreSQLContainer.live,
     VisitServiceLive.layer,
     VetServiceLive.layer,
-    TestContainerLayers.dataSourceLayer
+    TestContainerLayers.dataSourceLayer,
+    Live.default,
+    ZEnv.live
   )
 
 }

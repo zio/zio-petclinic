@@ -8,4 +8,6 @@ object AppError {
 
   final case class JsonDecodingError(message: String) extends AppError
 
+  final case class InvalidIdError(message: String) extends AppError
+
 }
