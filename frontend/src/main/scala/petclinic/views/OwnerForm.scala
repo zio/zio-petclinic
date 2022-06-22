@@ -1,7 +1,8 @@
 package petclinic.views
 
 import com.raquo.laminar.api.L._
-import petclinic.models.{CreateOwner, Owner, UpdateOwner}
+import petclinic.models.api.{CreateOwner, UpdateOwner}
+import petclinic.models.Owner
 import petclinic.views.components.{Button, ButtonConfig}
 import petclinic.{Component, Page, Requests, Router, Style}
 

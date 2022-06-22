@@ -2,7 +2,8 @@ package petclinic.views
 
 import animus.Transitions
 import com.raquo.laminar.api.L.{Owner => _, _}
-import petclinic.models.{CreateVisit, Pet, UpdateVisit, Visit}
+import petclinic.models.api.{CreateVisit, UpdateVisit}
+import petclinic.models.{Pet, Visit}
 import petclinic.views.components.{Button, ButtonConfig, Components}
 import petclinic.{Component, Requests, Style}
 

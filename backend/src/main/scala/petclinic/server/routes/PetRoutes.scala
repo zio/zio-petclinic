@@ -1,49 +1,56 @@
 package petclinic.server.routes
 
-import petclinic.models._
-import petclinic.server.routes.ServerUtils._
-import petclinic.services.{PetService, VisitService}
-import zhttp.http._
+import zio._
 import zio.json._
+import zhttp.http._
+import petclinic.services.PetService
+import petclinic.server.routes.ServerUtils._
+import petclinic.models.api.{CreatePet, UpdatePet}
 
-object PetRoutes {
+final case class PetRoutes(service: PetService) {
 
-  val routes: Http[PetService, Throwable, Request, Response] = Http.collectZIO[Request] {
+  val routes: Http[Any, Throwable, Request, Response] = Http.collectZIO[Request] {
 
     case Method.GET -> !! / "pets" / id =>
       for {
         id  <- parsePetId(id)
-        pet <- PetService.get(id)
+        pet <- service.get(id)
       } yield Response.json(pet.toJson)
 
     case Method.GET -> !! / "pets" =>
-      PetService.getAll.map(pets => Response.json(pets.toJson))
+      service.getAll.map(pets => Response.json(pets.toJson))
 
     case Method.GET -> !! / "owners" / id / "pets" =>
       for {
         id   <- parseOwnerId(id)
-        pets <- PetService.getForOwner(id)
+        pets <- service.getForOwner(id)
       } yield Response.json(pets.toJson)
 
     case req @ Method.POST -> !! / "pets" =>
       for {
         createPet <- parseBody[CreatePet](req)
-        pet       <- PetService.create(createPet.name, createPet.birthdate, createPet.species, createPet.ownerId)
+        pet       <- service.create(createPet.name, createPet.birthdate, createPet.species, createPet.ownerId)
       } yield Response.json(pet.toJson)
 
     case req @ Method.PATCH -> !! / "pets" / id =>
       for {
         petId     <- parsePetId(id)
         updatePet <- parseBody[UpdatePet](req)
-        _         <- PetService.update(petId, updatePet.name, updatePet.birthdate, updatePet.species, updatePet.ownerId)
+        _         <- service.update(petId, updatePet.name, updatePet.birthdate, updatePet.species, updatePet.ownerId)
       } yield Response.ok
 
     case Method.DELETE -> !! / "pets" / id =>
       for {
         id <- parsePetId(id)
-        _  <- PetService.delete(id)
+        _  <- service.delete(id)
       } yield Response.ok
 
   }
+
+}
+
+object PetRoutes {
+
+  val layer: URLayer[PetService, PetRoutes] = ZLayer.fromFunction(PetRoutes.apply _)
 
 }

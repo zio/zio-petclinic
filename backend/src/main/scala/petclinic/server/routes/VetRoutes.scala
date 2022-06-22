@@ -1,21 +1,29 @@
 package petclinic.server.routes
 
-import petclinic.services.VetService
+import zio._
 import zhttp.http._
 import zio.json.EncoderOps
+import petclinic.services.VetService
 
-object VetRoutes {
+final case class VetRoutes(service: VetService) {
 
-  val routes: Http[VetService, Throwable, Request, Response] = Http.collectZIO[Request] {
+  val routes: Http[Any, Throwable, Request, Response] = Http.collectZIO[Request] {
+
     case Method.GET -> !! / "veterinarians" =>
-      VetService.getAll.map(vets => Response.json(vets.toJson))
+      service.getAll.map(vets => Response.json(vets.toJson))
 
     case Method.GET -> !! / "veterinarians" / id =>
       for {
         vetId <- ServerUtils.parseVetId(id)
-        vet   <- VetService.get(vetId)
+        vet   <- service.get(vetId)
       } yield Response.json(vet.toJson)
 
   }
+
+}
+
+object VetRoutes {
+
+  val layer: URLayer[VetService, VetRoutes] = ZLayer.fromFunction(VetRoutes.apply _)
 
 }

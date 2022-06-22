@@ -2,6 +2,7 @@ package petclinic.views
 
 import com.raquo.laminar.api.L._
 import petclinic.models._
+import petclinic.models.api.{CreatePet, UpdatePet}
 import petclinic.views.components.{Button, ButtonConfig}
 import petclinic.{Component, Requests, Style}
 

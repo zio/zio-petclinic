@@ -55,5 +55,7 @@ final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
 }
 
 object OwnerServiceLive {
+
   val layer: URLayer[DataSource, OwnerService] = ZLayer.fromFunction(OwnerServiceLive.apply _)
+
 }

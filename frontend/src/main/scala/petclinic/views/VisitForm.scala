@@ -1,7 +1,8 @@
 package petclinic.views
 
 import com.raquo.laminar.api.L._
-import petclinic.models.{CreateVisit, PetId, UpdateVisit, Visit}
+import petclinic.models.api.{CreateVisit, UpdateVisit}
+import petclinic.models.{PetId, Visit, api}
 import petclinic.views.components.{Button, ButtonConfig}
 import petclinic.{Component, Requests, Style}
 
@@ -108,7 +109,7 @@ final case class VisitForm(
                     Requests
                       .updateVisit(
                         visit.id,
-                        UpdateVisit(
+                        api.UpdateVisit(
                           date = Some(date),
                           description = Some(description),
                           petId = visit.petId

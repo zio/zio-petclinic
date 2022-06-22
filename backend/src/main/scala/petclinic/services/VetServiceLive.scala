@@ -21,6 +21,8 @@ final case class VetServiceLive(dataSource: DataSource) extends VetService {
 }
 
 object VetServiceLive {
+
   val layer: URLayer[DataSource, VetService] =
     ZLayer.fromFunction(VetServiceLive.apply _)
+
 }
