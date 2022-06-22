@@ -2,13 +2,13 @@ package petclinic.services
 
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
+import zio.ZEnv
 import zio.test._
+import OwnerService._
 
 object OwnerServiceSpec extends ZIOSpecDefault {
 
-  import OwnerService._
-
-  override def spec: ZSpec[TestEnvironment, Throwable] = {
+  override def spec: Spec[TestEnvironment, Throwable] = {
     suite("OwnerService")(
       suite("added owners exist in db")(
         test("returns true confirming existence of added owner") {
@@ -72,12 +72,14 @@ object OwnerServiceSpec extends ZIOSpecDefault {
           )
         }
       )
-    ) @@ DbMigrationAspect.migrate()()
+    ) @@ DbMigrationAspect.migrateOnce()() @@ TestAspect.withLiveRandom
   }
     .provideShared(
       OwnerServiceLive.layer,
       ZPostgreSQLContainer.Settings.default,
       ZPostgreSQLContainer.live,
-      TestContainerLayers.dataSourceLayer
+      TestContainerLayers.dataSourceLayer,
+      Live.default,
+      ZEnv.live
     )
 }

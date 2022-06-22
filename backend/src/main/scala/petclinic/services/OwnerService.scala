@@ -9,9 +9,13 @@ import javax.sql.DataSource
 trait OwnerService {
 
   def create(firstName: String, lastName: String, address: String, phone: String, email: String): Task[Owner]
+
   def delete(id: OwnerId): Task[Unit]
+
   def get(id: OwnerId): Task[Option[Owner]]
+
   def getAll: Task[List[Owner]]
+
   def update(
       id: OwnerId,
       firstName: Option[String] = None,
@@ -61,7 +65,7 @@ final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
 
   override def create(firstName: String, lastName: String, address: String, phone: String, email: String): Task[Owner] =
     for {
-      owner <- Owner.apply(firstName, lastName, address, phone, email)
+      owner <- Owner.make(firstName, lastName, address, phone, email)
       _     <- run(query[Owner].insertValue(lift(owner))).provideEnvironment(ZEnvironment(dataSource))
     } yield owner
 
@@ -78,7 +82,6 @@ final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
   override def getAll: Task[List[Owner]] =
     run(query[Owner])
       .provideEnvironment(ZEnvironment(dataSource))
-      .map(_.toList)
 
   override def update(
       id: OwnerId,

@@ -158,7 +158,10 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
           Button(
             "Cancel",
             ButtonConfig.normal,
-            () => showVar.set(false)
+            { () =>
+              resetOwner()
+              showVar.set(false)
+            }
           ),
           div(cls("w-4")),
           Button(

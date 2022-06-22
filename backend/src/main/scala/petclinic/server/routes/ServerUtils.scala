@@ -6,21 +6,22 @@ import zio.json._
 import zio.{IO, ZIO}
 
 object ServerUtils {
+
   def parseBody[A: JsonDecoder](request: Request): IO[AppError, A] =
     for {
       body   <- request.bodyAsString.orElseFail(AppError.MissingBodyError)
       parsed <- ZIO.from(body.fromJson[A]).mapError(AppError.JsonDecodingError)
     } yield parsed
 
-  def parsePetId(id: String): IO[AppError.JsonDecodingError, PetId] =
-    PetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid pet id"))
+  def parsePetId(id: String): IO[AppError.InvalidIdError, PetId] =
+    PetId.fromString(id).orElseFail(AppError.InvalidIdError("Invalid pet id"))
 
-  def parseVisitId(id: String): IO[AppError.JsonDecodingError, VisitId] =
-    VisitId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid visit id"))
+  def parseVisitId(id: String): IO[AppError.InvalidIdError, VisitId] =
+    VisitId.fromString(id).orElseFail(AppError.InvalidIdError("Invalid visit id"))
 
-  def parseVetId(id: String): IO[AppError.JsonDecodingError, VetId] =
-    VetId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid vet id"))
+  def parseVetId(id: String): IO[AppError.InvalidIdError, VetId] =
+    VetId.fromString(id).orElseFail(AppError.InvalidIdError("Invalid vet id"))
 
-  def parseOwnerId(id: String): IO[AppError.JsonDecodingError, OwnerId] =
-    OwnerId.fromString(id).orElseFail(AppError.JsonDecodingError("Invalid owner id"))
+  def parseOwnerId(id: String): IO[AppError.InvalidIdError, OwnerId] =
+    OwnerId.fromString(id).orElseFail(AppError.InvalidIdError("Invalid owner id"))
 }

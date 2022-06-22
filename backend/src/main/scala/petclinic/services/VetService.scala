@@ -1,6 +1,6 @@
 package petclinic.services
 
-import zio._
+import zio.{Task, URLayer, ZEnvironment, ZIO, ZLayer}
 
 import javax.sql.DataSource
 import petclinic.QuillContext
@@ -8,7 +8,9 @@ import petclinic.models._
 
 trait VetService {
   def getAll: Task[List[Vet]]
+
   def get(vetId: VetId): Task[Option[Vet]]
+
 }
 
 object VetService {
@@ -26,7 +28,6 @@ final case class VetServiceLive(dataSource: DataSource) extends VetService {
   override def getAll: Task[List[Vet]] =
     run(query[Vet])
       .provideEnvironment(ZEnvironment(dataSource))
-      .map(_.toList)
 
   override def get(vetId: VetId): Task[Option[Vet]] =
     run(query[Vet].filter(_.id == lift(vetId)))

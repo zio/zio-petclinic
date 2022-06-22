@@ -8,7 +8,7 @@ import zio.json._
 
 object OwnerRoutes {
 
-  val routes: Http[OwnerService with PetService, Throwable, Request, Response] =
+  val routes: Http[OwnerService, Throwable, Request, Response] =
     Http.collectZIO[Request] {
 
       case Method.GET -> !! / "owners" =>
@@ -21,12 +21,6 @@ object OwnerRoutes {
           id    <- parseOwnerId(id)
           owner <- OwnerService.get(id)
         } yield Response.json(owner.toJson)
-
-      case Method.GET -> !! / "owners" / id / "pets" =>
-        for {
-          id   <- parseOwnerId(id)
-          pets <- PetService.getForOwner(id)
-        } yield Response.json(pets.toJson)
 
       case req @ Method.POST -> !! / "owners" =>
         for {

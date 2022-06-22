@@ -63,7 +63,7 @@ final case class VisitServiceLive(dataSource: DataSource, vetService: VetService
     for {
       vets  <- vetService.getAll
       id     = vets(scala.util.Random.nextInt(vets.length)).id
-      visit <- Visit.apply(petId, date, description, id)
+      visit <- Visit.make(petId, date, description, id)
       _     <- run(query[Visit].insertValue(lift(visit))).provideEnvironment(ZEnvironment(dataSource))
     } yield visit
 
@@ -84,7 +84,6 @@ final case class VisitServiceLive(dataSource: DataSource, vetService: VetService
   override def getAll: Task[List[Visit]] =
     run(query[Visit])
       .provideEnvironment(ZEnvironment(dataSource))
-      .map(_.toList)
 
   override def update(
       id: VisitId,
