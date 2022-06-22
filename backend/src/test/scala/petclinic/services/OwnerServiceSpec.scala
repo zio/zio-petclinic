@@ -1,10 +1,12 @@
 package petclinic.services
 
-import io.github.scottweaver.zio.aspect.DbMigrationAspect
-import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
 import zio.ZEnv
 import zio.test._
 import OwnerService._
+import io.github.scottweaver.zio.aspect.DbMigrationAspect
+import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
+
+// TODO: How should we deal with the accessors being used in the specs?
 
 object OwnerServiceSpec extends ZIOSpecDefault {
 

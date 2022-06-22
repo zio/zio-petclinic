@@ -4,7 +4,7 @@ import com.raquo.laminar.api.L.{Owner => _, _}
 import petclinic.{Component, Page, Requests, Router}
 import petclinic.models._
 
-case class VetIndexView() extends Component {
+final case class VetIndexView() extends Component {
 
   val $vets: Signal[List[Vet]] =
     Requests.getAllVets.toSignal(List.empty)
