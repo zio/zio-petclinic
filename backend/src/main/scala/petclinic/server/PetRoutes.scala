@@ -1,10 +1,10 @@
-package petclinic.server.routes
+package petclinic.server
 
 import zio._
 import zio.json._
 import zhttp.http._
 import petclinic.services.PetService
-import petclinic.server.routes.ServerUtils._
+import ServerUtils._
 import petclinic.models.api.{CreatePet, UpdatePet}
 
 final case class PetRoutes(service: PetService) {

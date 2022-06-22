@@ -1,4 +1,4 @@
-package petclinic.server.routes
+package petclinic.server
 
 sealed trait AppError extends Throwable
 

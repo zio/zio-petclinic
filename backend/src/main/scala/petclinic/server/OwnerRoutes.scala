@@ -1,11 +1,11 @@
-package petclinic.server.routes
+package petclinic.server
 
 import zio._
 import zio.json._
 import zhttp.http._
 import petclinic.services.OwnerService
 import petclinic.models.api.{CreateOwner, UpdateOwner}
-import petclinic.server.routes.ServerUtils.{parseBody, parseOwnerId}
+import ServerUtils.{parseBody, parseOwnerId}
 
 final case class OwnerRoutes(service: OwnerService) {
 

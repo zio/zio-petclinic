@@ -1,4 +1,4 @@
-package petclinic.server.routes
+package petclinic.server
 
 import zio._
 import zhttp.http._

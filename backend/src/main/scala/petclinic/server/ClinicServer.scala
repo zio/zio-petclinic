@@ -1,32 +1,35 @@
 package petclinic.server
 
-import petclinic.server.routes._
-import petclinic.services._
-import petclinic.{Migrations, QuillContext}
-import zhttp.http._
+import petclinic.Migrations
 import zhttp.service.Server
+import zhttp.http._
 import zio._
 
-object ClinicServer extends ZIOAppDefault {
+final case class ClinicServer(
+    ownerRoutes: OwnerRoutes,
+    petRoutes: PetRoutes,
+    vetRoutes: VetRoutes,
+    visitRoutes: VisitRoutes,
+    migrations: Migrations
+) {
 
-  val allRoutes: HttpApp[VetService with VisitService with PetService with OwnerService, Throwable] =
-    OwnerRoutes.routes ++ PetRoutes.routes ++ VisitRoutes.routes ++ VetRoutes.routes
+  val allRoutes: HttpApp[Any, Throwable] =
+    ownerRoutes.routes ++ petRoutes.routes ++ vetRoutes.routes ++ visitRoutes.routes
 
-  override val run: ZIO[Any, Throwable, Unit] = {
+  def start: ZIO[Any, Throwable, Unit] =
     for {
       // Reset the database to the initial state every 15 minutes
       // to clean up the deployed heroku data.
-      _    <- Migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
+      _    <- migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
       port <- System.envOrElse("PORT", "8080").map(_.toInt)
       _    <- Server.start(port, allRoutes @@ Middleware.cors())
     } yield ()
-  }
-    .provide(
-      QuillContext.dataSourceLayer,
-      OwnerServiceLive.layer,
-      PetServiceLive.layer,
-      VetServiceLive.layer,
-      VisitServiceLive.layer
-    )
+
+}
+
+object ClinicServer {
+
+  val layer: ZLayer[OwnerRoutes with PetRoutes with VetRoutes with VisitRoutes with Migrations, Nothing, ClinicServer] =
+    ZLayer.fromFunction(ClinicServer.apply _)
 
 }
