@@ -8,6 +8,10 @@ sealed trait Species {
 
 object Species {
 
+  case object Empty extends Species {
+    override def name: String = "Select..."
+  }
+
   case object Feline extends Species {
     override def name: String = "Feline"
   }
@@ -34,9 +38,10 @@ object Species {
     case "Avia"    => Avia
     case "Reptile" => Reptile
     case "Suidae"  => Suidae
+    case _         => Empty
   }
 
-  val all: List[Species] = List(Feline, Canine, Avia, Reptile, Suidae)
+  val all: List[Species] = List(Empty, Feline, Canine, Avia, Reptile, Suidae)
 
   implicit val codec: JsonCodec[Species] = DeriveJsonCodec.gen[Species]
 

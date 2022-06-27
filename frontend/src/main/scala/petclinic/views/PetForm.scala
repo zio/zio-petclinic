@@ -3,7 +3,7 @@ package petclinic.views
 import com.raquo.laminar.api.L._
 import petclinic.models._
 import petclinic.models.api.{CreatePet, UpdatePet}
-import petclinic.views.components.{Button, ButtonConfig}
+import petclinic.views.components.{Button, ButtonConfig, Validations}
 import petclinic.{Component, Requests, Style}
 
 import java.time.LocalDate
@@ -15,14 +15,37 @@ final case class PetForm(
     reloadPets: () => Unit
 ) extends Component {
   val petNameVar: Var[String]      = Var("")
-  val speciesVar: Var[Species]     = Var(Species.Feline)
+  val speciesVar: Var[Species]     = Var(Species.Empty)
   val birthdateVar: Var[LocalDate] = Var(LocalDate.now())
+
+  val triedToSubmit: Var[Boolean]           = Var(false)
+  val $triedToSubmit: StrictSignal[Boolean] = triedToSubmit.signal
 
   def resetPet(): Unit = {
     petNameVar.set(maybePet.map(_.name).getOrElse(""))
-    speciesVar.set(maybePet.map(_.species).getOrElse(Species.Feline))
+    speciesVar.set(maybePet.map(_.species).getOrElse(Species.Empty))
     birthdateVar.set(maybePet.map(_.birthdate).getOrElse(LocalDate.now()))
   }
+
+  val $petNameValidations: Signal[List[String]] =
+    petNameVar.signal.map(petName => if (petName.isEmpty) List("Please enter a name") else List.empty)
+
+  val $speciesValidations: Signal[List[String]] =
+    speciesVar.signal.map(species => if (species == Species.Empty) List("Please select a species") else List.empty)
+
+  val $birthdateValidations: Signal[List[String]] =
+    birthdateVar.signal.map(birthdate =>
+      if (birthdate.isAfter(LocalDate.now())) List("Date cannot be in the future")
+      else List.empty
+    )
+
+  val $allValidations: Signal[List[String]] =
+    $petNameValidations.combineWithFn($speciesValidations, $birthdateValidations) { (name, species, birthdate) =>
+      name ++ species ++ birthdate
+    }
+
+  val $isValid: Signal[Boolean] =
+    $allValidations.map(_.isEmpty)
 
   def body: HtmlElement =
     form(
@@ -34,6 +57,7 @@ final case class PetForm(
         Style.header,
         "Pet Name"
       ),
+      Validations($petNameValidations, $triedToSubmit),
       div(
         cls("mb-4"),
         input(
@@ -60,6 +84,7 @@ final case class PetForm(
               Style.header,
               "Species"
             ),
+            Validations($speciesValidations, $triedToSubmit),
             div(
               select(
                 controlled(
@@ -77,6 +102,7 @@ final case class PetForm(
               Style.header,
               "Birthdate"
             ),
+            Validations($birthdateValidations, $triedToSubmit),
             input(
               `type`("date"),
               background("none"),
@@ -120,53 +146,18 @@ final case class PetForm(
             { () =>
               resetPet()
               showVar.set(false)
+              triedToSubmit.set(false)
             }
           ),
           div(cls("w-4")),
-          Button(
-            "Save",
-            ButtonConfig.success,
-            () =>
-              if (showVar.now()) {
-                val name      = petNameVar.now()
-                val species   = speciesVar.now()
-                val birthdate = birthdateVar.now()
-
-                maybePet match {
-                  case Some(pet) =>
-                    Requests
-                      .updatePet(
-                        pet.id,
-                        UpdatePet(
-                          name = Some(name),
-                          birthdate = Some(birthdate),
-                          species = Some(species),
-                          ownerId = None
-                        )
-                      )
-                      .foreach { _ =>
-                        reloadPets()
-                      }(unsafeWindowOwner)
-                  case None =>
-                    Requests
-                      .addPet(
-                        CreatePet(
-                          name,
-                          birthdate,
-                          species,
-                          ownerId
-                        )
-                      )
-                      .foreach { _ =>
-                        reloadPets()
-                      }(unsafeWindowOwner)
-
-                }
-
-                showVar.set(false)
-              },
-            isSubmit = true
-          )
+          child <-- $isValid.map { isValid =>
+            Button(
+              "Save",
+              ButtonConfig.success,
+              () => if (isValid) handleSave() else triedToSubmit.set(true),
+              isSubmit = true
+            )
+          }
         )
       ),
       div(cls("h-8")),
@@ -180,4 +171,47 @@ final case class PetForm(
         e.preventDefault()
       }
     )
+
+  private def handleSave(): Unit = {
+    triedToSubmit.set(false)
+
+    if (showVar.now()) {
+      val name      = petNameVar.now()
+      val species   = speciesVar.now()
+      val birthdate = birthdateVar.now()
+
+      maybePet match {
+        case Some(pet) =>
+          Requests
+            .updatePet(
+              pet.id,
+              UpdatePet(
+                name = Some(name),
+                birthdate = Some(birthdate),
+                species = Some(species),
+                ownerId = None
+              )
+            )
+            .foreach { _ =>
+              reloadPets()
+            }(unsafeWindowOwner)
+        case None =>
+          Requests
+            .addPet(
+              CreatePet(
+                name,
+                birthdate,
+                species,
+                ownerId
+              )
+            )
+            .foreach { _ =>
+              reloadPets()
+            }(unsafeWindowOwner)
+
+      }
+
+      showVar.set(false)
+    }
+  }
 }
