@@ -29,7 +29,8 @@ val sharedSettings = Seq(
     "-language:higherKinds",
     "-language:implicitConversions",
     "-unchecked",
-    "-Xfatal-warnings"
+    "-Xfatal-warnings",
+    "-Ymacro-annotations"
   )
 )
 
@@ -42,6 +43,7 @@ lazy val backend = (project in file("backend"))
     name := "pet-clinic-backend",
     libraryDependencies ++= Seq(
       "dev.zio"               %% "zio"                               % zioVersion,
+      "dev.zio"               %% "zio-macros"                        % zioVersion,
       "dev.zio"               %% "zio-test"                          % zioVersion % Test,
       "dev.zio"               %% "zio-test-sbt"                      % zioVersion % Test,
       "io.d11"                %% "zhttp"                             % zioHttpVersion,

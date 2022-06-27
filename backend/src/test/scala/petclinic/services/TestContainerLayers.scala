@@ -1,12 +1,11 @@
 package petclinic.services
 
-import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
-import io.github.scottweaver.models.JdbcInfo
-import zio.{ZIO, ZLayer}
-
+import zio._
 import java.util.Properties
 import javax.sql.DataSource
+import io.github.scottweaver.models.JdbcInfo
 import scala.jdk.CollectionConverters.MapHasAsJava
+import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 
 object TestContainerLayers {
 

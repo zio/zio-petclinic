@@ -1,11 +1,14 @@
 package petclinic.services
 
 import zio._
+import zio.macros._
 import petclinic.models._
+import java.time.LocalDate
 
+@accessible
 trait PetService {
 
-  def create(name: String, birthdate: java.time.LocalDate, species: Species, ownerId: OwnerId): Task[Pet]
+  def create(name: String, birthdate: LocalDate, species: Species, ownerId: OwnerId): Task[Pet]
 
   def delete(id: PetId): Task[Unit]
 
@@ -18,42 +21,9 @@ trait PetService {
   def update(
       id: PetId,
       name: Option[String],
-      birthdate: Option[java.time.LocalDate],
+      birthdate: Option[LocalDate],
       species: Option[Species],
       ownerId: Option[OwnerId]
   ): Task[Unit]
-
-}
-
-object PetService {
-
-  def create(
-      name: String,
-      birthdate: java.time.LocalDate,
-      species: Species,
-      ownerId: OwnerId
-  ): ZIO[PetService, Throwable, Pet] =
-    ZIO.serviceWithZIO[PetService](_.create(name, birthdate, species, ownerId))
-
-  def delete(id: PetId): ZIO[PetService, Throwable, Unit] =
-    ZIO.serviceWithZIO[PetService](_.delete(id))
-
-  def get(id: PetId): ZIO[PetService, Throwable, Option[Pet]] =
-    ZIO.serviceWithZIO[PetService](_.get(id))
-
-  def getForOwner(ownerId: OwnerId): ZIO[PetService, Throwable, List[Pet]] =
-    ZIO.serviceWithZIO[PetService](_.getForOwner(ownerId))
-
-  def getAll: ZIO[PetService, Throwable, List[Pet]] =
-    ZIO.serviceWithZIO[PetService](_.getAll)
-
-  def update(
-      id: PetId,
-      name: Option[String],
-      birthdate: Option[java.time.LocalDate],
-      species: Option[Species],
-      ownerId: Option[OwnerId]
-  ): ZIO[PetService, Throwable, Unit] =
-    ZIO.serviceWithZIO[PetService](_.update(id, name, birthdate, species, ownerId))
 
 }

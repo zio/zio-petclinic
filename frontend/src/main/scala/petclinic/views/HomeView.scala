@@ -1,8 +1,7 @@
 package petclinic.views
 
 import com.raquo.laminar.api.L._
-import petclinic.views.components.{Button, ButtonConfig}
-import petclinic.{Component, Style}
+import petclinic.Component
 
 final case class HomeView() extends Component {
   val body: Div =
@@ -31,16 +30,69 @@ final case class HomeView() extends Component {
         )
       ),
       div(
+        cls("mb-4"),
         bodyLink(
           "ZIO documentation",
           "https://zio.dev/"
         )
       )
+//      div(
+//        cls("mb-2 text-xl text-gray-400 font-bold"),
+//        "Libraries Used"
+//      ),
+//      div(
+//        bodyLink(
+//          "Animus",
+//          ""
+//        )
+//      ),
+//      div(
+//        bodyLink(
+//          "Laminar",
+//          ""
+//        )
+//      ),
+//      div(
+//        bodyLink(
+//          "ZIO HTTP",
+//          ""
+//        )
+//      ),
+//      div(
+//        bodyLink(
+//          "ZIO JSON",
+//          ""
+//        )
+//      ),
+//      div(
+//        bodyLink(
+//          "ZIO Logging",
+//          ""
+//        )
+//      ),
+//      div(
+//        bodyLink(
+//          "ZIO Metrics",
+//          ""
+//        )
+//      ),
+//      div(
+//        bodyLink(
+//          "ZIO Quill",
+//          ""
+//        )
+//      ),
+//      div(
+//        bodyLink(
+//          "ZIO Test Containers",
+//          ""
+//        )
+//      )
     )
 
   private def bodyLink(name: String, url: String) =
     a(
-      cls("text-gray-700 hover:text-gray-500 text-l cursor-pointer"),
+      cls("text-orange-700 hover:text-orange-600 text-l cursor-pointer"),
       target("_blank"),
       name,
       href(url)

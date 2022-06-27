@@ -1,12 +1,11 @@
 package petclinic.services
 
+import zio._
+import zio.test._
+import petclinic.models._
+import java.time.LocalDate
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
-import petclinic.models._
-import zio.ZEnv
-import zio.test._
-
-import java.time.LocalDate
 
 object VisitServiceSpec extends ZIOSpecDefault {
 
