@@ -63,7 +63,7 @@ final case class OwnerIndexView() extends Component {
       ),
       div(
         OwnerForm(None, showNewOwnerFormVar, () => loadOwnersEventBus.emit(())),
-        Transitions.height(showNewOwnerFormVar.signal),
+        Transitions.heightDynamic(showNewOwnerFormVar.signal),
         Transitions.opacity(showNewOwnerFormVar.signal)
       ),
       div(

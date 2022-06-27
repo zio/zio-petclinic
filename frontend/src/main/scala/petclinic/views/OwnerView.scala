@@ -92,7 +92,7 @@ final case class OwnerView(owner: Owner, isEditingVar: Var[Boolean]) extends Com
           div(cls("w-4")),
           Button("Edit", ButtonConfig.gray.small, () => isEditingVar.set(true))
         ),
-        Transitions.height(showNewPetFormVar.signal.map(!_)),
+        Transitions.heightDynamic(showNewPetFormVar.signal.map(!_)),
         Transitions.opacity(showNewPetFormVar.signal.map(!_))
       )
     ),
@@ -109,7 +109,7 @@ final case class OwnerView(owner: Owner, isEditingVar: Var[Boolean]) extends Com
       opacity(0.1)
     ),
     div(
-      Transitions.height(showNewPetFormVar.signal),
+      Transitions.heightDynamic(showNewPetFormVar.signal),
       Transitions.opacity(showNewPetFormVar.signal),
       PetForm(owner.id, None, showNewPetFormVar, () => reloadPetBus.emit(()))
     ),
