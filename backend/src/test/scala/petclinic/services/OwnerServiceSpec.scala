@@ -1,10 +1,9 @@
 package petclinic.services
 
+import zio._
+import zio.test._
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
-import zio.ZEnv
-import zio.test._
-import OwnerService._
 
 object OwnerServiceSpec extends ZIOSpecDefault {
 
@@ -14,15 +13,28 @@ object OwnerServiceSpec extends ZIOSpecDefault {
         test("returns true confirming existence of added owner") {
           for {
             owner <-
-              create("Emily", "Elizabeth", "1 Birdwell Island, New York, NY", "212-215-1928", "emily@bigreddog.com")
-            getOwner <- get(owner.id)
+              OwnerService.create(
+                "Emily",
+                "Elizabeth",
+                "1 Birdwell Island, New York, NY",
+                "212-215-1928",
+                "emily@bigreddog.com"
+              )
+            getOwner <- OwnerService.get(owner.id)
           } yield assertTrue(getOwner.get == owner)
         },
         test("returns true confirming existence of many added owners") {
           for {
-            owner1 <- create("Fern", "Arable", "Arable Farm, Brooklin, ME", "207-711-1899", "fern@charlottesweb.com")
-            owner2 <- create("Jon", "Arbuckle", "711 Maple St, Muncie, IN", "812-728-1945", "jon@garfield.com")
-            owners <- getAll
+            owner1 <- OwnerService.create(
+                        "Fern",
+                        "Arable",
+                        "Arable Farm, Brooklin, ME",
+                        "207-711-1899",
+                        "fern@charlottesweb.com"
+                      )
+            owner2 <-
+              OwnerService.create("Jon", "Arbuckle", "711 Maple St, Muncie, IN", "812-728-1945", "jon@garfield.com")
+            owners <- OwnerService.getAll
           } yield assertTrue(owners.contains(owner1) && owners.contains(owner2))
         }
       ),
@@ -30,43 +42,51 @@ object OwnerServiceSpec extends ZIOSpecDefault {
         test("returns false confirming non-existence of deleted owner") {
           for {
             owner <-
-              create(
+              OwnerService.create(
                 "Sherlock",
                 "Holmes",
                 "221B Baker St, London, England, UK",
                 "+44-20-7224-3688",
                 "sherlock@sherlockholmes.com"
               )
-            _     <- delete(owner.id)
-            owner <- get(owner.id)
+            _     <- OwnerService.delete(owner.id)
+            owner <- OwnerService.get(owner.id)
           } yield assertTrue(owner.isEmpty)
         },
         test("returns true confirming non-existence of many deleted owners") {
           for {
             owner1 <-
-              create("Elizabeth", "Hunter", "Ontario, Canada", "807-511-1918", "elizabeth@incrediblejourney.com")
-            owner2 <- create("Peter", "Hunter", "Ontario, Canada", "807-511-1918", "peter@incrediblejourney.com")
-            owner3 <- create("Jim", "Hunter", "Ontario, Canada", "807-511-1918", "jim@incrediblejourney.com")
-            _      <- delete(owner1.id)
-            _      <- delete(owner2.id)
-            owner1 <- get(owner1.id)
-            owner2 <- get(owner2.id)
-            owner3 <- get(owner3.id)
+              OwnerService.create(
+                "Elizabeth",
+                "Hunter",
+                "Ontario, Canada",
+                "807-511-1918",
+                "elizabeth@incrediblejourney.com"
+              )
+            owner2 <-
+              OwnerService.create("Peter", "Hunter", "Ontario, Canada", "807-511-1918", "peter@incrediblejourney.com")
+            owner3 <-
+              OwnerService.create("Jim", "Hunter", "Ontario, Canada", "807-511-1918", "jim@incrediblejourney.com")
+            _      <- OwnerService.delete(owner1.id)
+            _      <- OwnerService.delete(owner2.id)
+            owner1 <- OwnerService.get(owner1.id)
+            owner2 <- OwnerService.get(owner2.id)
+            owner3 <- OwnerService.get(owner3.id)
           } yield assertTrue(owner1.isEmpty && owner2.isEmpty && owner3.isDefined)
         }
       ),
       suite("updated owners contain accurate information")(
         test("returns true confirming updated owner information") {
           for {
-            owner <- create(
+            owner <- OwnerService.create(
                        "Harry",
                        "Potter",
                        "4 Privet Drive, Little Whinging, Surrey, UK",
                        "+44-20-7224-3688",
                        "harry@hogwarts.edu"
                      )
-            _     <- update(owner.id, None, None, Some("12 Grimmauld Place, London, England, UK"), None, None)
-            owner <- get(owner.id)
+            _     <- OwnerService.update(owner.id, None, None, Some("12 Grimmauld Place, London, England, UK"), None, None)
+            owner <- OwnerService.get(owner.id)
           } yield assertTrue(
             owner.get.firstName == "Harry" && owner.get.address == "12 Grimmauld Place, London, England, UK" && owner.get.address != "4 Privet Drive, Little Whinging, Surrey, UK"
           )

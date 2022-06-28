@@ -1,8 +1,9 @@
 package petclinic.views
 
+import petclinic.models.Owner
 import com.raquo.laminar.api.L._
-import petclinic.models.{CreateOwner, Owner, UpdateOwner}
-import petclinic.views.components.{Button, ButtonConfig}
+import petclinic.views.components._
+import petclinic.models.api.{CreateOwner, UpdateOwner}
 import petclinic.{Component, Page, Requests, Router, Style}
 
 final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], reloadOwner: () => Unit)
@@ -12,6 +13,48 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
   val emailVar: Var[String]     = Var("")
   val phoneVar: Var[String]     = Var("")
   val addressVar: Var[String]   = Var("")
+
+  val triedToSubmit: Var[Boolean]           = Var(false)
+  val $triedToSubmit: StrictSignal[Boolean] = triedToSubmit.signal
+
+  val $firstNameValidations: Signal[List[String]] =
+    firstNameVar.signal.map(firstName => if (firstName.isEmpty) List("Please enter a first name") else List.empty)
+
+  val $lastNameValidations: Signal[List[String]] =
+    lastNameVar.signal.map(lastName => if (lastName.isEmpty) List("Please enter a last name") else List.empty)
+
+  val $emailValidations: Signal[List[String]] =
+    emailVar.signal.map { email =>
+      if (email.isEmpty) List("Please enter an email address")
+      else if ("""^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$""".r.unapplySeq(email).isDefined) List.empty
+      else List("Invalid email")
+    }
+
+  val $phoneValidations: Signal[List[String]] =
+    phoneVar.signal.map { phone =>
+      if (phone.isEmpty) List("Please enter a phone number")
+      else if ("""^\d{3}-\d{3}-\d{4}$""".r.unapplySeq(phone).isDefined) List.empty
+      else List("Invalid phone number")
+    }
+
+  val $addressValidations: Signal[List[String]] =
+    addressVar.signal.map { address =>
+      if (address.isEmpty) List("Please enter an address")
+      else List.empty
+    }
+
+  val $allValidations: Signal[List[String]] =
+    $firstNameValidations.combineWithFn(
+      $lastNameValidations,
+      $emailValidations,
+      $phoneValidations,
+      $addressValidations
+    ) { (firstName, lastName, email, phone, address) =>
+      firstName ++ lastName ++ email ++ phone ++ address
+    }
+
+  val $isValid: Signal[Boolean] =
+    $allValidations.map(_.isEmpty)
 
   def resetOwner(): Unit = {
     firstNameVar.set(maybeOwner.map(_.firstName).getOrElse(""))
@@ -33,6 +76,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
             Style.header,
             "First Name"
           ),
+          Validations($firstNameValidations, $triedToSubmit),
           div(
             cls("mb-4"),
             input(
@@ -55,6 +99,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
             Style.header,
             "Last Name"
           ),
+          Validations($lastNameValidations, $triedToSubmit),
           div(
             cls("mb-4"),
             input(
@@ -79,6 +124,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
               Style.header,
               "Email"
             ),
+            Validations($emailValidations, $triedToSubmit),
             div(
               cls("mb-4"),
               input(
@@ -99,6 +145,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
               Style.header,
               "Phone"
             ),
+            Validations($phoneValidations, $triedToSubmit),
             div(
               cls("mb-4"),
               input(
@@ -119,6 +166,7 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
               Style.header,
               "Address"
             ),
+            Validations($addressValidations, $triedToSubmit),
             div(
               cls("mb-4"),
               input(
@@ -161,21 +209,28 @@ final case class OwnerForm(maybeOwner: Option[Owner], showVar: Var[Boolean], rel
             { () =>
               resetOwner()
               showVar.set(false)
+              triedToSubmit.set(false)
             }
           ),
           div(cls("w-4")),
-          Button(
-            "Save",
-            ButtonConfig.success,
-            () => handleSave(),
-            isSubmit = true
-          )
-        )
-      ),
-      onSubmit --> { e => e.preventDefault() }
+          child <-- $isValid.map { isValid =>
+            Button(
+              "Save",
+              ButtonConfig.success,
+              () => if (isValid) handleSave() else triedToSubmit.set(true),
+              isSubmit = true
+            )
+          }
+        ),
+        onSubmit --> { e =>
+          e.preventDefault()
+        }
+      )
     )
 
   private def handleSave(): Unit = {
+    triedToSubmit.set(false)
+
     if (!showVar.now())
       return
 

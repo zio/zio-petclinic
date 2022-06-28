@@ -1,4 +1,4 @@
-package petclinic.server.routes
+package petclinic.server
 
 import petclinic.models.{OwnerId, PetId, VetId, VisitId}
 import zhttp.http.Request

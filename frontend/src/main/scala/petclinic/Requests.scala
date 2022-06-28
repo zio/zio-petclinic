@@ -3,6 +3,7 @@ package petclinic
 import petclinic.models._
 import com.raquo.laminar.api.L.{Owner => _, _}
 import org.scalajs.dom.document
+import petclinic.models.api.{CreateOwner, CreatePet, CreateVisit, UpdateOwner, UpdatePet, UpdateVisit}
 import sttp.capabilities
 import sttp.client3._
 import zio.json._

@@ -2,7 +2,7 @@ package petclinic
 
 import com.raquo.laminar.api.L._
 
-case class Footer() extends Component {
+final case class Footer() extends Component {
   def body =
     div(
       cls(

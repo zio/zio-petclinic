@@ -6,7 +6,7 @@ import petclinic.{Component, Page, Requests, Router, Style}
 import petclinic.models._
 import petclinic.views.components.{Button, ButtonConfig}
 
-case class OwnerIndexView() extends Component {
+final case class OwnerIndexView() extends Component {
 
   val loadOwnersEventBus =
     new EventBus[Unit]
@@ -63,7 +63,7 @@ case class OwnerIndexView() extends Component {
       ),
       div(
         OwnerForm(None, showNewOwnerFormVar, () => loadOwnersEventBus.emit(())),
-        Transitions.height(showNewOwnerFormVar.signal),
+        Transitions.heightDynamic(showNewOwnerFormVar.signal),
         Transitions.opacity(showNewOwnerFormVar.signal)
       ),
       div(
@@ -80,7 +80,7 @@ case class OwnerIndexView() extends Component {
     )
 }
 
-case class OwnerLinkView(owner: Owner) extends Component {
+final case class OwnerLinkView(owner: Owner) extends Component {
   val appeared = Var(false)
 
   def body =
