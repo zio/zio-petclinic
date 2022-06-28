@@ -3,6 +3,8 @@ package petclinic
 import petclinic.server._
 import petclinic.services._
 import zio._
+import zio.logging.backend.SLF4J
+import zio.logging.removeDefaultLoggers
 
 object Main extends ZIOAppDefault {
 
@@ -20,7 +22,9 @@ object Main extends ZIOAppDefault {
         PetServiceLive.layer,
         VetServiceLive.layer,
         VisitServiceLive.layer,
-        Migrations.layer
+        Migrations.layer,
+        SLF4J.slf4j(LogLevel.Info),
+        removeDefaultLoggers
       )
 
 }

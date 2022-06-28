@@ -3,16 +3,17 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
-val zioVersion               = "2.0.0-RC6"
-val zioJsonVersion           = "0.3.0-RC8"
-val zioHttpVersion           = "2.0.0-RC9"
-val zioQuillVersion          = "4.0.0-RC1"
-val postgresVersion          = "42.3.6"
-val flywayVersion            = "8.5.12"
-val zioTestContainersVersion = "0.6.0"
-val laminarVersion           = "0.14.2"
 val animusVersion            = "0.1.12"
+val flywayVersion            = "8.5.12"
+val laminarVersion           = "0.14.2"
+val postgresVersion          = "42.3.6"
+val slf4jVersion             = "1.7.36"
+val zioHttpVersion           = "2.0.0-RC9"
+val zioJsonVersion           = "0.3.0-RC8"
 val zioLoggingVersion        = "2.0.0-RC10"
+val zioQuillVersion          = "4.0.0-RC1"
+val zioTestContainersVersion = "0.6.0"
+val zioVersion               = "2.0.0-RC6"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -52,7 +53,9 @@ lazy val backend = (project in file("backend"))
       "org.flywaydb"           % "flyway-core"                       % flywayVersion,
       "io.github.scottweaver" %% "zio-2-0-testcontainers-postgresql" % zioTestContainersVersion,
       "io.github.scottweaver" %% "zio-2-0-db-migration-aspect"       % zioTestContainersVersion,
-      "dev.zio"               %% "zio-logging"                       % zioLoggingVersion
+      "dev.zio"               %% "zio-logging-slf4j"                 % zioLoggingVersion,
+      "org.slf4j"              % "slf4j-api"                         % slf4jVersion,
+      "org.slf4j"              % "slf4j-simple"                      % slf4jVersion
     ),
     Test / fork := true,
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
