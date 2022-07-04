@@ -1,6 +1,7 @@
 package petclinic.services
 
 import zio._
+import zio.metrics._
 import petclinic.QuillContext
 import petclinic.models.{OwnerId, Pet, PetId, Species}
 
@@ -17,6 +18,7 @@ final case class PetServiceLive(dataSource: DataSource) extends PetService {
     for {
       pet <- Pet.make(name, birthdate, species, ownerId)
       _   <- run(query[Pet].insertValue(lift(pet))).provideEnvironment(ZEnvironment(dataSource))
+      _   <- Metric.counter("pet.created").increment
     } yield pet
 
   override def delete(id: PetId): Task[Unit] =

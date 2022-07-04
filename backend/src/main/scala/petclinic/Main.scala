@@ -5,8 +5,13 @@ import petclinic.services._
 import zio._
 import zio.logging.backend.SLF4J
 import zio.logging.removeDefaultLoggers
+import zio.metrics.connectors.MetricsConfig
+import zio.metrics.connectors.newrelic
 
 object Main extends ZIOAppDefault {
+
+  val metricsConfig =
+    ZLayer.succeed(MetricsConfig(5.seconds))
 
   override val run: Task[Unit] =
     ZIO
@@ -24,7 +29,10 @@ object Main extends ZIOAppDefault {
         VisitServiceLive.layer,
         Migrations.layer,
         SLF4J.slf4j(LogLevel.Info),
-        removeDefaultLoggers
+        removeDefaultLoggers,
+        newrelic.newRelicLayer,
+        newrelic.NewRelicConfig.fromEnvLayer,
+        metricsConfig
       )
 
 }
