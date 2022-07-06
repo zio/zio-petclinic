@@ -20,7 +20,7 @@ trait PetService {
   /** Deletes an existing Pet. */
   def delete(id: PetId): Task[Unit]
 
-  /** Retrieves a Pet from the databse. */
+  /** Retrieves a Pet from the database. */
   def get(id: PetId): Task[Option[Pet]]
 
   /** Retrieves all Pets for a given Owner from the database. */
