@@ -52,9 +52,9 @@ final case class PetServiceLive(dataSource: DataSource) extends PetService {
       .provideEnvironment(ZEnvironment(dataSource))
       .map(_.headOption)
 
-  /** getForOwner uses the filter method to find all pets in the database whose
-    * OwnerId matches that of the one provided, returning all Pets associated
-    * with a given Owner.
+  /** getForOwner uses the filter method to find all Pets in the database whose
+    * OwnerId matches the one provided, returning all Pets associated with a
+    * given Owner.
     */
   override def getForOwner(ownerId: OwnerId): Task[List[Pet]] =
     run(query[Pet].filter(_.ownerId == lift(ownerId)).sortBy(_.birthdate))
