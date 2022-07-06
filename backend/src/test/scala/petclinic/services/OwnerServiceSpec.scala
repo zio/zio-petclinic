@@ -1,10 +1,16 @@
 package petclinic.services
 
-import zio._
-import zio.test._
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
+import zio._
+import zio.test._
 
+/** OwnerServiceSpec is a test suite for the OwnerService which allows us to
+  * test that the methods we defined in the OwnerService work correctly. Because
+  * our methods interact directly with the database and we want to limit
+  * unnecessary database queries which could result in data inconsistencies in
+  * the case of testing, we are using ZIO Test Containers to mimic a database.
+  */
 object OwnerServiceSpec extends ZIOSpecDefault {
 
   override def spec: Spec[TestEnvironment, Throwable] = {
