@@ -12,14 +12,15 @@ import javax.sql.DataSource
   */
 final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
 
-  // QuillContext needs to be imported here to expose the methods in the QuillContext object.
+  /** QuillContext needs to be imported here to expose the methods in the
+    * QuillContext object.
+    */
   import QuillContext._
 
   /** create uses the make method defined in the Owner model to create a new
     * Owner. The Owner is formatted into a query string, then inserted into the
     * database using provideEnvironment to provide the datasource to the effect
-    * returned by run. ZEnvironment is used to provide the necessary dataSource
-    * to the insertValue method. The created Owner is returned.
+    * returned by run. The created Owner is returned.
     */
   override def create(firstName: String, lastName: String, address: String, phone: String, email: String): Task[Owner] =
     for {
@@ -29,7 +30,7 @@ final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
 
   /** delete uses the filter method to find an Owner in the database whose ID
     * matches the one provided and deletes it. Unit is returned to indicate that
-    * we are running this method for its side effects, a deleted user gives us
+    * we are running this method for its side effects, a deleted Owner gives us
     * no information. This will either fail or succeed.
     */
   override def delete(id: OwnerId): Task[Unit] =
@@ -37,13 +38,17 @@ final case class OwnerServiceLive(dataSource: DataSource) extends OwnerService {
       .provideEnvironment(ZEnvironment(dataSource))
       .unit
 
-  // get uses the filter method to find an Owner in the database whose ID matches the one provided and returns it.
+  /** get uses the filter method to find an Owner in the database whose ID
+    * matches the one provided and returns it.
+    */
   override def get(id: OwnerId): Task[Option[Owner]] =
     run(query[Owner].filter(_.id == lift(id)))
       .provideEnvironment(ZEnvironment(dataSource))
       .map(_.headOption)
 
-  // getAll uses the query method to find all entries in the database of type Owner and returns them.
+  /** getAll uses the query method to find all entries in the database of type
+    * Owner and returns them.
+    */
   override def getAll: Task[List[Owner]] =
     run(query[Owner])
       .provideEnvironment(ZEnvironment(dataSource))
