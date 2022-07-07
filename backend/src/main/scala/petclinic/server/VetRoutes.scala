@@ -12,11 +12,11 @@ final case class VetRoutes(service: VetService) {
 
   val routes: Http[Any, Throwable, Request, Response] = Http.collectZIO[Request] {
 
-    // Gets all of the vets in the database and returns them as JSON.
+    // Gets all of the Vets in the database and returns them as JSON.
     case Method.GET -> !! / "veterinarians" =>
       service.getAll.map(vets => Response.json(vets.toJson))
 
-    // Gets a single vet found by their parsed ID and returns it as JSON.
+    // Gets a single Vet found by their parsed ID and returns it as JSON.
     case Method.GET -> !! / "veterinarians" / id =>
       for {
         vetId <- ServerUtils.parseVetId(id)

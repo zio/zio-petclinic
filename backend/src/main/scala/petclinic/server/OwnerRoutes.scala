@@ -14,18 +14,18 @@ final case class OwnerRoutes(service: OwnerService) {
 
   val routes: Http[Any, Throwable, Request, Response] = Http.collectZIO[Request] {
 
-    // Gets all of the owners in the database and returns them as JSON.
+    // Gets all of the Owners in the database and returns them as JSON.
     case Method.GET -> !! / "owners" =>
       service.getAll.map(owners => Response.json(owners.toJson))
 
-    // Gets a single owner found by their parsed ID and returns it as JSON.
+    // Gets a single Owner found by their parsed ID and returns it as JSON.
     case Method.GET -> !! / "owners" / id =>
       for {
         id    <- parseOwnerId(id)
         owner <- service.get(id)
       } yield Response.json(owner.toJson)
 
-    // Creates a new owner from the parsed CreateOwner request body and returns it as JSON.
+    // Creates a new Owner from the parsed CreateOwner request body and returns it as JSON.
     case req @ Method.POST -> !! / "owners" =>
       for {
         createOwner <- parseBody[CreateOwner](req)
@@ -39,7 +39,7 @@ final case class OwnerRoutes(service: OwnerService) {
           )
       } yield Response.json(owner.toJson)
 
-    /** Updates a single owner found by their parsed ID using the information
+    /** Updates a single Owner found by their parsed ID using the information
       * parsed from the UpdateOwner request and returns a 200 status code
       * indicating success.
       */
@@ -57,7 +57,7 @@ final case class OwnerRoutes(service: OwnerService) {
              )
       } yield Response.ok
 
-    // Deletes a single owner found by their parsed ID and returns a 200 status code indicating success.
+    // Deletes a single Owner found by their parsed ID and returns a 200 status code indicating success.
     case Method.DELETE -> !! / "owners" / id =>
       for {
         id <- parseOwnerId(id)

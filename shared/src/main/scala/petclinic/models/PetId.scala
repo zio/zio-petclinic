@@ -5,8 +5,10 @@ import zio.json._
 
 import java.util.UUID
 
-/** PetId is a wrapper for UUID. This is a merely a convenience to prevent us
-  * from passing the wrong ID type along
+/** PetId is a wrapper for UUID.
+  *
+  * This is a merely a convenience to prevent us from passing the wrong ID type
+  * along
   */
 final case class PetId(id: UUID) extends AnyVal
 
@@ -23,6 +25,6 @@ object PetId {
       PetId(UUID.fromString(id))
     }
 
-  /** Generates a codec allowing a UUID to be (de)serialized as an PetId. */
+  /** Derives a codec allowing a UUID to be (de)serialized as an PetId. */
   implicit val codec: JsonCodec[PetId] = JsonCodec[UUID].transform(PetId(_), _.id)
 }

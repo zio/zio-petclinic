@@ -2,16 +2,17 @@ package petclinic.models
 
 import zio.json._
 
-/** Species is a wrapper for a string which allows us to further specify what
-  * types of Species exist in our application.
+/** Species is a wrapper for a string which allows us to further explicitly
+  * define what types of Species exist in our application.
   */
 sealed trait Species {
   def name: String
 }
 
 /** The companion object houses the definitive types of Species and wraps their
-  * string representation in a case object. This conveniently allows Species to
-  * be matched on.
+  * string representation in a case object.
+  *
+  * This conveniently allows Species to be matched on.
   */
 object Species {
 
@@ -52,7 +53,7 @@ object Species {
   /** Compiles all of our Species subtypes into a List. */
   val all: List[Species] = List(Empty, Feline, Canine, Avia, Reptile, Suidae)
 
-  /** Generates a JSON codec for Species allowing it to be de(serialized). */
+  /** Derives a JSON codec for Species allowing it to be de(serialized). */
   implicit val codec: JsonCodec[Species] = DeriveJsonCodec.gen[Species]
 
 }

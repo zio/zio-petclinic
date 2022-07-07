@@ -6,10 +6,11 @@ import zio.macros._
 
 import java.time.LocalDate
 
-/** VisitService manages the CRUD operations for the Visit type. Services like
-  * this are responsible for persisting and modifying saved data. Note that the
-  * "@accessible" macro annotation is used to add "accessors" to the companion
-  * object for use in the corresponding spec.
+/** VisitService manages the CRUD operations for the Visit type.
+  *
+  * Services like this are responsible for persisting and modifying saved data.
+  * Note that the `@accessible` macro annotation is used to add "accessors" to
+  * the companion object for use in the corresponding spec.
   */
 @accessible
 trait VisitService {

@@ -5,14 +5,17 @@ import zio._
 
 import javax.sql.DataSource
 
-/** Migrations is a service that uses Flyway to run our migrations. Note that
-  * Flyway searches the project's file structure for files that match Flyway's
-  * naming convention (see files in db.migration) allowing the user to simply
-  * call built-in methods.
+/** Migrations is a service that uses Flyway to run our migrations.
+  *
+  * Note that Flyway searches the project's file structure for files that match
+  * Flyway's naming convention (see files in db.migration) allowing the user to
+  * simply call built-in methods.
+  *
+  * For more information on Flyway, see: https://flywaydb.org/documentation/
   */
 final case class Migrations(dataSource: DataSource) {
 
-  /** migrate runs the database migration files.
+  /** Runs the database migration files.
     */
   val migrate: Task[Unit] =
     for {
@@ -20,7 +23,7 @@ final case class Migrations(dataSource: DataSource) {
       _      <- ZIO.attempt(flyway.migrate())
     } yield ()
 
-  /** reset removes any added data from the database and reruns the migrations
+  /** Removes any added data from the database and reruns the migrations
     * effectively resetting it to its original state.
     */
   val reset: Task[Unit] =
@@ -44,7 +47,7 @@ final case class Migrations(dataSource: DataSource) {
 }
 
 /** Here in the companion object we define the layer that provides the
-  * Migrations service..
+  * Migrations service.
   */
 object Migrations {
   val layer: ZLayer[DataSource, Nothing, Migrations] =

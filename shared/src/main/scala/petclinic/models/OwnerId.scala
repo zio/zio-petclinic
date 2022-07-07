@@ -5,8 +5,10 @@ import zio.json._
 
 import java.util.UUID
 
-/** OwnerId is a wrapper for UUID. This is a merely a convenience to prevent us
-  * from passing the wrong ID type along
+/** OwnerId is a wrapper for UUID.
+  *
+  * This is a merely a convenience to prevent us from passing the wrong ID type
+  * along
   */
 final case class OwnerId(id: UUID) extends AnyVal
 
@@ -23,7 +25,7 @@ object OwnerId {
       OwnerId(UUID.fromString(id))
     }
 
-  /** Generates a codec allowing a UUID to be (de)serialized as an OwnerId. */
+  /** Derives a codec allowing a UUID to be (de)serialized as an OwnerId. */
   implicit val codec: JsonCodec[OwnerId] =
     JsonCodec[UUID].transform(OwnerId(_), _.id)
 }

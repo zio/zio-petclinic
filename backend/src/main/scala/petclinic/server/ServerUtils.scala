@@ -6,8 +6,10 @@ import zio.json._
 import zio.{IO, ZIO}
 
 /** ServerUtils houses helper functions for parsing various elements of the API
-  * including request bodies and specific IDs. This allows us to explicitly
-  * define what we are parsing and to provide custom error messages.
+  * including request bodies and specific IDs.
+  *
+  * This allows us to explicitly define what we are parsing and to provide
+  * custom error messages.
   */
 object ServerUtils {
 

@@ -5,8 +5,10 @@ import zio.json._
 
 import java.util.UUID
 
-/** VisitId is a wrapper for UUID. This is a merely a convenience to prevent us
-  * from passing the wrong ID type along
+/** VisitId is a wrapper for UUID.
+  *
+  * This is a merely a convenience to prevent us from passing the wrong ID type
+  * along
   */
 final case class VisitId(id: UUID) extends AnyVal
 
@@ -20,7 +22,7 @@ object VisitId {
     */
   def fromString(id: String): Task[VisitId] = ZIO.attempt(VisitId(UUID.fromString(id)))
 
-  /** Generates a codec allowing a UUID to be (de)serialized as an VisitId. */
+  /** Derives a codec allowing a UUID to be (de)serialized as an VisitId. */
   implicit val codec: JsonCodec[VisitId] = JsonCodec[UUID].transform(VisitId(_), _.id)
 
 }

@@ -15,16 +15,16 @@ final case class VetServiceLive(dataSource: DataSource) extends VetService {
   // QuillContext needs to be imported here to expose the methods in the QuillContext object.
   import QuillContext._
 
-  /** get uses the filter method to find a Vet in the database whose ID matches
-    * the one provided and returns it.
+  /** `get` uses `filter` to find a Vet in the database whose ID matches the one
+    * provided and returns it.
     */
   override def get(vetId: VetId): Task[Option[Vet]] =
     run(query[Vet].filter(_.id == lift(vetId)))
       .provideEnvironment(ZEnvironment(dataSource))
       .map(_.headOption)
 
-  /** getAll uses the query method to find all entries in the database of type
-    * Vet and returns them.
+  /** `getAll` uses `query` to find all entries in the database of type Vet and
+    * returns them.
     */
   override def getAll: Task[List[Vet]] =
     run(query[Vet])

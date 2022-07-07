@@ -4,10 +4,11 @@ import petclinic.models._
 import zio._
 import zio.macros._
 
-/** OwnerService manages the CRUD operations for the Owner type. Services like
-  * this are responsible for persisting and modifying saved data. Note that the
-  * "@accessible" macro annotation is used to add "accessors" to the companion
-  * object for use in the corresponding spec.
+/** OwnerService manages the CRUD operations for the Owner type.
+  *
+  * Services like this are responsible for persisting and modifying saved data.
+  * Note that the `@accessible` macro annotation is used to add "accessors" to
+  * the companion object for use in the corresponding spec.
   */
 @accessible
 trait OwnerService {
@@ -20,11 +21,11 @@ trait OwnerService {
     */
   def delete(id: OwnerId): Task[Unit]
 
-  /** Retreives an Owner from the database
+  /** Retrieves an Owner from the database
     */
   def get(id: OwnerId): Task[Option[Owner]]
 
-  /** Retreives all Owners from the database
+  /** Retrieves all Owners from the database
     */
   def getAll: Task[List[Owner]]
 
