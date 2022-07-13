@@ -10,8 +10,8 @@ import zio.metrics.connectors.{MetricsConfig, newrelic}
 /** Main is the entry point for the application.
   *
   * Because it extends ZIOAppDefault, we are required to define a `run` method
-  * in which our side-effecting logic is housed. `run` is responsible for
-  * starting the application and providing it with the necessary dependencies.
+  * in which our application logic is housed. `run` is responsible for starting
+  * the application and providing it with the necessary dependencies.
   */
 object Main extends ZIOAppDefault {
 
