@@ -1,12 +1,21 @@
 package petclinic.services
 
-import zio._
-import zio.test._
-import petclinic.models._
-import java.time.LocalDate
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
+import petclinic.models._
+import zio._
+import zio.test._
 
+import java.time.LocalDate
+
+/** A test suite for VisitService which allows us to test that the methods
+  * defined in it work as expected.
+  *
+  * Because the methods interact directly with the database and we want to limit
+  * unnecessary queries to our local database, which could result in data
+  * inconsistencies, we are using ZIO Test Containers to create a temporary
+  * database.
+  */
 object VisitServiceSpec extends ZIOSpecDefault {
 
   override def spec: Spec[TestEnvironment, Throwable] = {

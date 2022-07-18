@@ -1,20 +1,36 @@
 package petclinic.services
 
+import petclinic.models._
 import zio._
 import zio.macros._
-import petclinic.models._
 
+/** OwnerService manages the CRUD operations for the Owner type.
+  *
+  * Services like this are responsible for persisting and modifying saved data.
+  * Note that the `@accessible` macro annotation is used to add "accessors" to
+  * the companion object for use in the corresponding spec.
+  */
 @accessible
 trait OwnerService {
 
+  /** Creates a new Owner
+    */
   def create(firstName: String, lastName: String, address: String, phone: String, email: String): Task[Owner]
 
+  /** Deletes an existing Owner
+    */
   def delete(id: OwnerId): Task[Unit]
 
+  /** Retrieves an Owner from the database
+    */
   def get(id: OwnerId): Task[Option[Owner]]
 
+  /** Retrieves all Owners from the database
+    */
   def getAll: Task[List[Owner]]
 
+  /** Updates an existing Owner
+    */
   def update(
       id: OwnerId,
       firstName: Option[String] = None,

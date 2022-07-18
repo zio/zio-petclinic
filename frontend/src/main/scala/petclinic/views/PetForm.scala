@@ -158,18 +158,18 @@ final case class PetForm(
               isSubmit = true
             )
           }
-        )
+        ),
+        div(cls("h-8")),
+        onSubmit --> { e =>
+          e.preventDefault()
+        }
       ),
       div(cls("h-8")),
       div(
         height("1px"),
         background("#000000"),
         opacity(0.1)
-      ),
-      div(cls("h-8")),
-      onSubmit --> { e =>
-        e.preventDefault()
-      }
+      )
     )
 
   private def handleSave(): Unit = {
