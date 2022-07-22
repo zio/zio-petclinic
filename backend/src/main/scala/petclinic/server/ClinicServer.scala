@@ -6,7 +6,8 @@ import zhttp.http.middleware.HttpMiddleware
 import zhttp.service.Server
 import zio._
 
-/** ClinicServer is a service that will start up the ZIO-Http server.
+/** ClinicServer is a service that houses the details for how to set up the
+  * ZIO-Http server.
   *
   * It is comprised of the various routes, which in this case are also services
   * that we defined in the different route files
