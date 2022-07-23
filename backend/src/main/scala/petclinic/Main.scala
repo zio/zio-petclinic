@@ -40,17 +40,21 @@ object Main extends ZIOAppDefault {
     ZIO
       .serviceWithZIO[ClinicServer](_.start)
       .provide(
+//        ZLayer.Debug.mermaid,
         ClinicServer.layer,
+        // Routes
         PetRoutes.layer,
         VetRoutes.layer,
         OwnerRoutes.layer,
         VisitRoutes.layer,
-        QuillContext.dataSourceLayer,
+        // Repositories
         OwnerServiceLive.layer,
         PetServiceLive.layer,
         VetServiceLive.layer,
         VisitServiceLive.layer,
         Migrations.layer,
+        QuillContext.dataSourceLayer,
+        // Operations
         SLF4J.slf4j(LogLevel.Info),
         removeDefaultLoggers,
         newrelic.newRelicLayer,
