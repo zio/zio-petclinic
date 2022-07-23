@@ -69,7 +69,8 @@ final case class OwnerRoutes(service: OwnerService) {
 }
 
 /** Here in the companion object we define the layer that will be used to
-  * provide the routes for the OwnerService API.
+  * provide the routes for the OwnerService API to the run method in our Main
+  * file.
   */
 object OwnerRoutes {
 

@@ -55,7 +55,8 @@ final case class VisitRoutes(service: VisitService) {
 }
 
 /** Here in the companion object we define the layer that will be used to
-  * provide the routes for the VisitService API.
+  * provide the routes for the VisitService API to the run method in our Main
+  * file.
   */
 object VisitRoutes {
 

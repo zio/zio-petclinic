@@ -28,7 +28,8 @@ final case class VetRoutes(service: VetService) {
 }
 
 /** Here in the companion object we define the layer that will be used to
-  * provide the routes for the VetService API.
+  * provide the routes for the VetService API to the run method in our Main
+  * file.
   */
 object VetRoutes {
 

@@ -22,23 +22,39 @@ object Main extends ZIOAppDefault {
     ZLayer.succeed(MetricsConfig(5.seconds))
 
   /** As mentioned above, `provide` is used to pass along the dependencies
-    * required by this ZIO effect.
+    * (dependencies here meaning the internal services our app depends on)
+    * required by this ZIO effect (our run method).
+    *
+    * By providing these dependencies we are saying we have:
+    *   - instructions for creating a server
+    *   - routes for any request we might need to handle (pet, vet, etc.)
+    *   - the datasource for the database
+    *   - instructions for how data should be persisted or modified in the
+    *     database which makes use of the defined service and the datasource
+    *   - migration instructions we can give to our services for interacting
+    *     with the database
+    *   - instructions for logging and metrics which give us information about
+    *     how the app is running and any issues we might run into.
     */
   override val run: Task[Unit] =
     ZIO
       .serviceWithZIO[ClinicServer](_.start)
       .provide(
+//        ZLayer.Debug.mermaid,
         ClinicServer.layer,
+        // Routes
         PetRoutes.layer,
         VetRoutes.layer,
         OwnerRoutes.layer,
         VisitRoutes.layer,
-        QuillContext.dataSourceLayer,
+        // Repositories
         OwnerServiceLive.layer,
         PetServiceLive.layer,
         VetServiceLive.layer,
         VisitServiceLive.layer,
         Migrations.layer,
+        QuillContext.dataSourceLayer,
+        // Operations
         SLF4J.slf4j(LogLevel.Info),
         removeDefaultLoggers,
         newrelic.newRelicLayer,

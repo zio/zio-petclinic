@@ -9,13 +9,13 @@ import javax.sql.DataSource
   *
   * Note that Flyway searches the project's file structure for files that match
   * Flyway's naming convention (see files in db.migration) allowing the user to
-  * simply call built-in methods.
+  * simply call built-in methods for managing database migrations.
   *
   * For more information on Flyway, see: https://flywaydb.org/documentation/
   */
 final case class Migrations(dataSource: DataSource) {
 
-  /** Runs the database migration files.
+  /** Runs the database migration files..
     */
   val migrate: Task[Unit] =
     for {

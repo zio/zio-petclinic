@@ -62,7 +62,8 @@ final case class PetRoutes(service: PetService) {
 }
 
 /** Here in the companion object we define the layer that will be used to
-  * provide the routes for the PetService API.
+  * provide the routes for the PetService API to the run method in our Main
+  * file.
   */
 object PetRoutes {
 
