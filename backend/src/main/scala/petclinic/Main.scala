@@ -15,15 +15,11 @@ import zio.metrics.connectors.{MetricsConfig, newrelic}
   */
 object Main extends ZIOAppDefault {
 
-  /** Configures Metrics to be run at a set interval, in our case every five
-    * seconds
-    */
-  // val metricsConfig =
-  //   ZLayer.succeed(MetricsConfig(5.seconds))
+  /** Configures Metrics to be run at a set interval, in our case every five seconds */
+  val metricsConfig =
+    ZLayer.succeed(MetricsConfig(5.seconds))
 
-  /** As mentioned above, `provide` is used to pass along the dependencies
-    * required by this ZIO effect.
-    */
+  /** As mentioned above, `provide` is used to pass along the dependencies required by this ZIO effect.  */
   override val run: Task[Unit] =
     ZIO
       .serviceWithZIO[ClinicServer](_.start)
@@ -38,11 +34,9 @@ object Main extends ZIOAppDefault {
         PetServiceLive.layer,
         VetServiceLive.layer,
         VisitServiceLive.layer,
-        Migrations.layer,
-        // SLF4J.slf4j(LogLevel.Info),
-        // removeDefaultLoggers,
-
-
+        // Migrations.layer,
+        SLF4J.slf4j,
+        removeDefaultLoggers,
 
         // newrelic.newRelicLayer,
         // newrelic.NewRelicConfig.fromEnvLayer,

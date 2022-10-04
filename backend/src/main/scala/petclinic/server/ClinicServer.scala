@@ -6,30 +6,21 @@ import zhttp.http.middleware.HttpMiddleware
 import zhttp.service.Server
 import zio._
 
-/** ClinicServer is a service that will start up the ZIO-Http server.
-  *
-  * It is comprised of the various routes, which in this case are also services
-  * that we defined in the different route files
-  */
 final case class ClinicServer(
     ownerRoutes: OwnerRoutes,
     petRoutes: PetRoutes,
     vetRoutes: VetRoutes,
     visitRoutes: VisitRoutes,
-    migrations: Migrations
+    // migrations: Migrations
 ) {
 
-  /** Composes the routes together, returning a single HttpApp.
-    */
   val allRoutes: HttpApp[Any, Throwable] = {
     ownerRoutes.routes ++ petRoutes.routes ++ vetRoutes.routes ++ visitRoutes.routes
   }
 
   /** Logs the requests made to the server.
-    *
     * It also adds a request ID to the logging context, so any further logging
     * that occurs in the handler can be associated with the same request.
-    *
     * For more information on the logging, see:
     * https://zio.github.io/zio-logging/
     */
@@ -58,19 +49,17 @@ final case class ClinicServer(
     */
   def start: ZIO[Any, Throwable, Unit] =
     for {
-      _    <- migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
+      // _    <- migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
       port <- System.envOrElse("PORT", "8080").map(_.toInt)
       _    <- Server.start(port, allRoutes @@ Middleware.cors() @@ loggingMiddleware)
     } yield ()
 
 }
 
-/** Here in the companion object, we define the layer that will be used to
-  * create the server.
-  */
 object ClinicServer {
 
-  val layer: ZLayer[OwnerRoutes with PetRoutes with VetRoutes with VisitRoutes with Migrations, Nothing, ClinicServer] =
+  // val layer: ZLayer[OwnerRoutes with PetRoutes with VetRoutes with VisitRoutes with Migrations, Nothing, ClinicServer] =
+  val layer: ZLayer[OwnerRoutes with PetRoutes with VetRoutes with VisitRoutes, Nothing, ClinicServer] =
     ZLayer.fromFunction(ClinicServer.apply _)
 
 }
