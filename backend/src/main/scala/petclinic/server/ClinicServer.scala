@@ -11,7 +11,7 @@ final case class ClinicServer(
     petRoutes: PetRoutes,
     vetRoutes: VetRoutes,
     visitRoutes: VisitRoutes,
-    // migrations: Migrations
+    migrations: Migrations
 ) {
 
   val allRoutes: HttpApp[Any, Throwable] = {
@@ -49,7 +49,7 @@ final case class ClinicServer(
     */
   def start: ZIO[Any, Throwable, Unit] =
     for {
-      // _    <- migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
+      _    <- migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
       port <- System.envOrElse("PORT", "8080").map(_.toInt)
       _    <- Server.start(port, allRoutes @@ Middleware.cors() @@ loggingMiddleware)
     } yield ()
@@ -58,8 +58,8 @@ final case class ClinicServer(
 
 object ClinicServer {
 
-  // val layer: ZLayer[OwnerRoutes with PetRoutes with VetRoutes with VisitRoutes with Migrations, Nothing, ClinicServer] =
-  val layer: ZLayer[OwnerRoutes with PetRoutes with VetRoutes with VisitRoutes, Nothing, ClinicServer] =
+  val layer: ZLayer[OwnerRoutes with PetRoutes with VetRoutes with VisitRoutes with Migrations, Nothing, ClinicServer] =
+  // val layer: ZLayer[OwnerRoutes with PetRoutes with VetRoutes with VisitRoutes, Nothing, ClinicServer] =
     ZLayer.fromFunction(ClinicServer.apply _)
 
 }
