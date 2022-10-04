@@ -40,7 +40,10 @@ sbt
 ```
 
 **Pane 3**
-*Compiles the frontend JavaScript*
+*Compiles the frontend JavaScript* 
+
+> For now, this MUST be compiled with Scala 2, for the animus library. TODO: build with Scala 3
+
 ```shell
 sbt
 ~ frontend/fastLinkJS
