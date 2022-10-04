@@ -47,3 +47,23 @@ sbt
 ```
 
 Then open the browser and navigate to [localhost:3000](http://localhost:3000).
+
+<br><hr><br>
+## Running with Docker
+> Requires Docker to be running 
+
+Run the local database, start backend server
+```
+make postgres-up
+sbt 
+~ backend/reStart
+
+Crtl+c (to exit)
+```
+
+Run the frontend
+```
+open http://localhost:3000
+make frontend-up
+```
+

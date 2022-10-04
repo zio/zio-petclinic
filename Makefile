@@ -16,10 +16,17 @@ POSTGRES_PASSWORD := password
 ## MAIN ##############################
 .PHONY: check postgres setup
 
+backend-up:
+	@sbt sbt backend/reStart
+
 check: 
 	@echo "REPO_DIR: $(REPO_DIR)"
 	@echo "DOCKER_PG_VOL: $(DOCKER_PG_VOL)"
 	@echo "$(REPO_DIR)/$(DOCKER_PG_VOL)"
+
+frontend-up:
+	@open http://localhost:3000
+	@yarn exec vite
 
 postgres-up:
 	@docker run --name $(DOCKER_PG_CONTAINER) \
@@ -36,3 +43,5 @@ postgres-down:
 setup:
 	@echo "SETTING UP DOCKER FILES/DIR"
 	$(shell [ -d $(DOCKER_PG_VOL) ] || mkdir $(DOCKER_PG_VOL))
+	@echo "yarn install for frontend"
+	yarn install
