@@ -39,8 +39,11 @@ object Main extends ZIOAppDefault {
         VetServiceLive.layer,
         VisitServiceLive.layer,
         Migrations.layer,
-        SLF4J.slf4j(LogLevel.Info),
-        removeDefaultLoggers,
+        // SLF4J.slf4j(LogLevel.Info),
+        // removeDefaultLoggers,
+
+
+
         // newrelic.newRelicLayer,
         // newrelic.NewRelicConfig.fromEnvLayer,
         // metricsConfig

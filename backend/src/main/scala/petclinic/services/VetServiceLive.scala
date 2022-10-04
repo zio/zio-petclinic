@@ -3,6 +3,7 @@ package petclinic.services
 import petclinic.QuillContext
 import petclinic.models.{Vet, VetId}
 import zio._
+import io.getquill._
 
 import javax.sql.DataSource
 

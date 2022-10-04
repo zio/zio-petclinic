@@ -1,7 +1,7 @@
 package petclinic
 
 import com.typesafe.config.ConfigFactory
-import io.getquill.context.ZioJdbc.DataSourceLayer
+import io.getquill.jdbczio.Quill
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio._
 
@@ -29,12 +29,9 @@ object QuillContext extends PostgresZioJdbcContext(SnakeCase) {
         config = ConfigFactory.parseMap(
                    configMap.updated("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource").asJava
                  )
-      } yield DataSourceLayer.fromConfig(config).orDie
+      } yield Quill.DataSource.fromConfig(config).orDie
     }.flatten
 
-  /** HerokuConnectionInfo is a wrapper for the datasource information to make
-    * it compatible with Heroku
-    */
   final case class HerokuConnectionInfo(
       username: String,
       password: String,
@@ -50,7 +47,6 @@ object QuillContext extends PostgresZioJdbcContext(SnakeCase) {
       )
   }
 
-  /** Parses the necessary information out of the Heroku formatted URL */
   def parseHerokuDatabaseUrl(string: String): HerokuConnectionInfo =
     string match {
       case s"postgres://$username:$password@$host:$port/$dbname" =>
