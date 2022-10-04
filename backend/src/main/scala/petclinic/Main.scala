@@ -18,8 +18,8 @@ object Main extends ZIOAppDefault {
   /** Configures Metrics to be run at a set interval, in our case every five
     * seconds
     */
-  val metricsConfig =
-    ZLayer.succeed(MetricsConfig(5.seconds))
+  // val metricsConfig =
+  //   ZLayer.succeed(MetricsConfig(5.seconds))
 
   /** As mentioned above, `provide` is used to pass along the dependencies
     * required by this ZIO effect.
@@ -41,9 +41,9 @@ object Main extends ZIOAppDefault {
         Migrations.layer,
         SLF4J.slf4j(LogLevel.Info),
         removeDefaultLoggers,
-        newrelic.newRelicLayer,
-        newrelic.NewRelicConfig.fromEnvLayer,
-        metricsConfig
+        // newrelic.newRelicLayer,
+        // newrelic.NewRelicConfig.fromEnvLayer,
+        // metricsConfig
       )
 
 }

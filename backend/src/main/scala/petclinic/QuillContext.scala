@@ -20,7 +20,7 @@ object QuillContext extends PostgresZioJdbcContext(SnakeCase) {
         herokuURL <- System.env("DATABASE_URL").orDie
         localDBConfig = Map(
                           "dataSource.user"     -> "postgres",
-                          "dataSource.password" -> "",
+                          "dataSource.password" -> "password",
                           "dataSource.url"      -> "jdbc:postgresql://localhost:5432/postgres"
                         )
         configMap = herokuURL
