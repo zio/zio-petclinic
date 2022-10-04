@@ -2,7 +2,6 @@ package petclinic.services
 
 import petclinic.models._
 import zio._
-import zio.macros._
 
 import java.time.LocalDate
 
@@ -12,7 +11,7 @@ import java.time.LocalDate
   * Note that the `@accessible` macro annotation is used to add "accessors" to
   * the companion object for use in the corresponding spec.
   */
-@accessible
+
 trait VisitService {
 
   /** Creates a new Visit */

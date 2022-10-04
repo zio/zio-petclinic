@@ -2,7 +2,7 @@ package petclinic.services
 
 import petclinic.models._
 import zio._
-import zio.macros._
+import io.getquill._
 
 /** OwnerService manages the CRUD operations for the Owner type.
   *
@@ -10,7 +10,7 @@ import zio.macros._
   * Note that the `@accessible` macro annotation is used to add "accessors" to
   * the companion object for use in the corresponding spec.
   */
-@accessible
+
 trait OwnerService {
 
   /** Creates a new Owner

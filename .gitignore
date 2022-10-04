@@ -5,3 +5,6 @@ target
 .DS_Store
 node_modules
 dist
+
+docker_pg_vol/
+ign-*

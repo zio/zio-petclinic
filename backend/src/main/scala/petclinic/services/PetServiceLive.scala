@@ -4,6 +4,7 @@ import petclinic.QuillContext
 import petclinic.models.{OwnerId, Pet, PetId, Species}
 import zio._
 import zio.metrics._
+import io.getquill._
 
 import javax.sql.DataSource
 
