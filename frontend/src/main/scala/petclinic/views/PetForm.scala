@@ -207,6 +207,7 @@ final case class PetForm(
             )
             .foreach { _ =>
               reloadPets()
+              resetPet()
             }(unsafeWindowOwner)
 
       }

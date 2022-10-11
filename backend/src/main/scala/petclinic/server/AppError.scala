@@ -2,7 +2,7 @@ package petclinic.server
 
 /** Here we have defined our own error type, called AppError, which is a subtype
   * of Throwable. The purpose of this is to make errors more descriptive and
-  * easier to understand and therefore handle.
+  * easier to understand and therefore easier handle.
   */
 sealed trait AppError extends Throwable
 

@@ -3,18 +3,21 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
-val animusVersion               = "0.1.15"
-val flywayVersion               = "8.5.12"
-val laminarVersion              = "0.14.2"
-val postgresVersion             = "42.3.6"
-val slf4jVersion                = "1.7.36"
-val zioHttpVersion              = "2.0.0-RC9"
-val zioJsonVersion              = "0.3.0-RC8"
-val zioLoggingVersion           = "2.0.0-RC10"
-val zioQuillVersion             = "4.0.0-RC1"
-val zioTestContainersVersion    = "0.6.0"
-val zioVersion                  = "2.0.0-RC6"
-val zioMetricsConnectorsVersion = "2.0.0-RC6"
+val animusVersion               = "0.1.15"     // animation library for Laminar
+val flywayVersion               = "8.5.12"     // manages database migrations
+val laminarVersion              = "0.14.2"     // functional reactive programming (FRP) library
+val postgresVersion             = "42.3.6"     // Java database connectivity (JDBC) driver for PostgreSQL
+val scalaJavaTimeVersion        = "2.4.0"      // an implementation of the java.time package for Scala
+val slf4jVersion                = "1.7.36"     // logging framework
+val sttpClientVersion           = "3.6.2"      // an API for describing HTTP requests and how to handle responses
+val waypointVersion             = "0.5.0"      // router for Laminar for URL matching and managing URL transitions
+val zioHttpVersion              = "2.0.0-RC9"  // HTTP client library for ZIO
+val zioJsonVersion              = "0.3.0-RC8"  // JSON serialization library for ZIO
+val zioLoggingVersion           = "2.0.0-RC10" // logging library for ZIO
+val zioQuillVersion             = "4.0.0-RC1"  // compile-time database query library for ZIO
+val zioTestContainersVersion    = "0.6.0"      // library fro testing database queries with ZIO
+val zioVersion                  = "2.0.0-RC6"  // Scala library for asynchronous and concurrent programming
+val zioMetricsConnectorsVersion = "2.0.0-RC6"  // metrics library for ZIO
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -82,9 +85,9 @@ lazy val frontend = (project in file("frontend"))
     libraryDependencies ++= Seq(
       "com.raquo"                     %%% "laminar"         % laminarVersion,
       "io.github.kitlangton"          %%% "animus"          % animusVersion,
-      "com.raquo"                     %%% "waypoint"        % "0.5.0",
-      "io.github.cquiroz"             %%% "scala-java-time" % "2.4.0",
-      "com.softwaremill.sttp.client3" %%% "core"            % "3.6.2"
+      "com.raquo"                     %%% "waypoint"        % waypointVersion,
+      "io.github.cquiroz"             %%% "scala-java-time" % scalaJavaTimeVersion,
+      "com.softwaremill.sttp.client3" %%% "core"            % sttpClientVersion
     )
   )
   .settings(sharedSettings)
