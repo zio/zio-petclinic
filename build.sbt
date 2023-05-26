@@ -3,21 +3,21 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
-val animusVersion               = "0.1.15"     // animation library for Laminar
-val flywayVersion               = "8.5.12"     // manages database migrations
-val laminarVersion              = "0.14.2"     // functional reactive programming (FRP) library
-val postgresVersion             = "42.3.6"     // Java database connectivity (JDBC) driver for PostgreSQL
-val scalaJavaTimeVersion        = "2.4.0"      // an implementation of the java.time package for Scala
-val slf4jVersion                = "1.7.36"     // logging framework
-val sttpClientVersion           = "3.6.2"      // an API for describing HTTP requests and how to handle responses
-val waypointVersion             = "0.5.0"      // router for Laminar for URL matching and managing URL transitions
-val zioHttpVersion              = "3.0.0-RC1"  // HTTP client library for ZIO
-val zioJsonVersion              = "0.5.0"  // JSON serialization library for ZIO
-val zioLoggingVersion           = "2.1.13" // logging library for ZIO
-val zioQuillVersion             = "4.6.0"  // compile-time database query library for ZIO
-val zioTestContainersVersion    = "0.10.0"      // library fro testing database queries with ZIO
-val zioVersion                  = "2.0.13"  // Scala library for asynchronous and concurrent programming
-val zioMetricsConnectorsVersion = "2.0.8"  // metrics library for ZIO
+val animusVersion               = "0.1.15"    // animation library for Laminar
+val flywayVersion               = "8.5.12"    // manages database migrations
+val laminarVersion              = "0.14.2"    // functional reactive programming (FRP) library
+val postgresVersion             = "42.3.6"    // Java database connectivity (JDBC) driver for PostgreSQL
+val scalaJavaTimeVersion        = "2.4.0"     // an implementation of the java.time package for Scala
+val slf4jVersion                = "1.7.36"    // logging framework
+val sttpClientVersion           = "3.6.2"     // an API for describing HTTP requests and how to handle responses
+val waypointVersion             = "0.5.0"     // router for Laminar for URL matching and managing URL transitions
+val zioHttpVersion              = "3.0.0-RC1" // HTTP client library for ZIO
+val zioJsonVersion              = "0.5.0"     // JSON serialization library for ZIO
+val zioLoggingVersion           = "2.1.13"    // logging library for ZIO
+val zioQuillVersion             = "4.6.0"     // compile-time database query library for ZIO
+val zioTestContainersVersion    = "0.10.0"    // library fro testing database queries with ZIO
+val zioVersion                  = "2.0.13"    // Scala library for asynchronous and concurrent programming
+val zioMetricsConnectorsVersion = "2.0.8"     // metrics library for ZIO
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
