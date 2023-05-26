@@ -121,10 +121,7 @@ object PetServiceSpec extends ZIOSpecDefault {
     PetServiceLive.layer,
     OwnerServiceLive.layer,
     ZPostgreSQLContainer.Settings.default,
-    ZPostgreSQLContainer.live,
-    TestContainerLayers.dataSourceLayer,
-    Live.default,
-    ZEnv.live
+    ZPostgreSQLContainer.live
   )
 
 }

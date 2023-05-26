@@ -5,3 +5,5 @@ target
 .DS_Store
 node_modules
 dist
+.metals
+.vscode

@@ -1,9 +1,7 @@
 package petclinic.server
 
 import petclinic.Migrations
-import zhttp.http._
-import zhttp.http.middleware.HttpMiddleware
-import zhttp.service.Server
+import zio.http._
 import zio._
 
 /** ClinicServer is a service that houses the details for how to set up the
@@ -34,17 +32,17 @@ final case class ClinicServer(
     * For more information on the logging, see:
     * https://zio.github.io/zio-logging/
     */
-  val loggingMiddleware: HttpMiddleware[Any, Nothing] =
-    new HttpMiddleware[Any, Nothing] {
-      override def apply[R1 <: Any, E1 >: Nothing](
-          http: Http[R1, E1, Request, Response]
-      ): Http[R1, E1, Request, Response] =
-        Http.fromOptionFunction[Request] { request =>
+  val loggingMiddleware: HttpAppMiddleware.Simple[Any, Nothing] =
+    new HttpAppMiddleware.Simple[Any, Nothing] {
+      override def apply[Env, Err](
+          http: Http[Env, Err, Request, Response]
+      )(implicit trace: zio.Trace): Http[Env, Err, Request, Response] =
+        Http.fromHandlerZIO[Request] { request =>
           Random.nextUUID.flatMap { requestId =>
             ZIO.logAnnotate("REQUEST-ID", requestId.toString) {
               for {
                 _      <- ZIO.logInfo(s"Request: $request")
-                result <- http(request)
+                result <- http.runHandler(request)
               } yield result
             }
           }
@@ -57,11 +55,10 @@ final case class ClinicServer(
     * port will be provided by Heroku, otherwise the port will be 8080. The
     * server is then started on the given port with the routes provided.
     */
-  def start: ZIO[Any, Throwable, Unit] =
+  def start: ZIO[Server, Throwable, Unit] =
     for {
-      _    <- migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
-      port <- System.envOrElse("PORT", "8080").map(_.toInt)
-      _    <- Server.start(port, allRoutes @@ Middleware.cors() @@ loggingMiddleware)
+      _ <- migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
+      _ <- Server.serve(allRoutes.withDefaultErrorResponse @@ HttpAppMiddleware.cors() @@ loggingMiddleware)
     } yield ()
 
 }

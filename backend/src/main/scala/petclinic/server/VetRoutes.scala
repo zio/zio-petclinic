@@ -1,7 +1,7 @@
 package petclinic.server
 
 import petclinic.services.VetService
-import zhttp.http._
+import zio.http._
 import zio._
 import zio.json.EncoderOps
 

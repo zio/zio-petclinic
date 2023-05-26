@@ -3,7 +3,7 @@ package petclinic.server
 import petclinic.models.api.{CreateOwner, UpdateOwner}
 import petclinic.server.ServerUtils.{parseBody, parseOwnerId}
 import petclinic.services.OwnerService
-import zhttp.http._
+import zio.http._
 import zio._
 import zio.json._
 

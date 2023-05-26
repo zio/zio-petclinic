@@ -2,6 +2,7 @@ package petclinic
 
 import com.typesafe.config.ConfigFactory
 import io.getquill.context.ZioJdbc.DataSourceLayer
+import io.getquill.jdbczio.Quill.{DataSource => QuillDataSource}
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio._
 
@@ -29,7 +30,7 @@ object QuillContext extends PostgresZioJdbcContext(SnakeCase) {
         config = ConfigFactory.parseMap(
                    configMap.updated("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource").asJava
                  )
-      } yield DataSourceLayer.fromConfig(config).orDie
+      } yield QuillDataSource.fromConfig(config).orDie
     }.flatten
 
   /** HerokuConnectionInfo is a wrapper for the datasource information to make
