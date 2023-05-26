@@ -3,7 +3,7 @@ package petclinic.server
 import petclinic.models.api.{CreatePet, UpdatePet}
 import petclinic.server.ServerUtils._
 import petclinic.services.PetService
-import zhttp.http._
+import zio.http._
 import zio._
 import zio.json._
 

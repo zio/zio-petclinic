@@ -3,6 +3,7 @@ package petclinic
 import petclinic.server._
 import petclinic.services._
 import zio._
+import zio.http._
 import zio.logging.backend.SLF4J
 import zio.logging.removeDefaultLoggers
 import zio.metrics.connectors.{MetricsConfig, newrelic}
@@ -59,7 +60,9 @@ object Main extends ZIOAppDefault {
         removeDefaultLoggers,
         newrelic.newRelicLayer,
         newrelic.NewRelicConfig.fromEnvLayer,
-        metricsConfig
+        metricsConfig,
+        Server.live,
+        ZLayer.fromZIO(ZIO.config(Server.Config.config))
       )
 
 }

@@ -11,7 +11,7 @@ val scalaJavaTimeVersion        = "2.4.0"      // an implementation of the java.
 val slf4jVersion                = "1.7.36"     // logging framework
 val sttpClientVersion           = "3.6.2"      // an API for describing HTTP requests and how to handle responses
 val waypointVersion             = "0.5.0"      // router for Laminar for URL matching and managing URL transitions
-val zioHttpVersion              = "2.0.0-RC10"  // HTTP client library for ZIO
+val zioHttpVersion              = "3.0.0-RC1"  // HTTP client library for ZIO
 val zioJsonVersion              = "0.5.0"  // JSON serialization library for ZIO
 val zioLoggingVersion           = "2.1.13" // logging library for ZIO
 val zioQuillVersion             = "4.6.0"  // compile-time database query library for ZIO
@@ -52,7 +52,7 @@ lazy val backend = (project in file("backend"))
       "dev.zio"               %% "zio-metrics-connectors"            % zioMetricsConnectorsVersion,
       "dev.zio"               %% "zio-test"                          % zioVersion % Test,
       "dev.zio"               %% "zio-test-sbt"                      % zioVersion % Test,
-      "io.d11"                %% "zhttp"                             % zioHttpVersion,
+      "dev.zio"               %% "zio-http"                          % zioHttpVersion,
       "io.getquill"           %% "quill-jdbc-zio"                    % zioQuillVersion,
       "org.postgresql"         % "postgresql"                        % postgresVersion,
       "org.flywaydb"           % "flyway-core"                       % flywayVersion,
