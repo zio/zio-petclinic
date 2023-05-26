@@ -128,10 +128,7 @@ object VisitServiceSpec extends ZIOSpecDefault {
     ZPostgreSQLContainer.Settings.default,
     ZPostgreSQLContainer.live,
     VisitServiceLive.layer,
-    VetServiceLive.layer,
-    TestContainerLayers.dataSourceLayer,
-    Live.default,
-    ZEnv.live
+    VetServiceLive.layer
   )
 
 }

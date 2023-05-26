@@ -55,7 +55,7 @@ object Main extends ZIOAppDefault {
         Migrations.layer,
         QuillContext.dataSourceLayer,
         // Operations
-        SLF4J.slf4j(LogLevel.Info),
+        SLF4J.slf4j,
         removeDefaultLoggers,
         newrelic.newRelicLayer,
         newrelic.NewRelicConfig.fromEnvLayer,

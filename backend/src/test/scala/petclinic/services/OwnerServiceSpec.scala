@@ -105,9 +105,6 @@ object OwnerServiceSpec extends ZIOSpecDefault {
     .provideShared(
       OwnerServiceLive.layer,
       ZPostgreSQLContainer.Settings.default,
-      ZPostgreSQLContainer.live,
-      TestContainerLayers.dataSourceLayer,
-      Live.default,
-      ZEnv.live
+      ZPostgreSQLContainer.live
     )
 }
