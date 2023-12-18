@@ -22,9 +22,8 @@ final case class ClinicServer(
 
   /** Composes the routes together, returning a single HttpApp.
     */
-  val allRoutes: HttpApp[Any, Throwable] = {
+  val allRoutes: HttpApp[Any, Throwable] =
     ownerRoutes.routes ++ petRoutes.routes ++ vetRoutes.routes ++ visitRoutes.routes
-  }
 
   /** Logs the requests made to the server.
     *
