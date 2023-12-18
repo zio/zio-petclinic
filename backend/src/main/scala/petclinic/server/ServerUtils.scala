@@ -1,8 +1,8 @@
 package petclinic.server
 
 import petclinic.models.{OwnerId, PetId, VetId, VisitId}
-import zhttp.http.Request
 import zio.json._
+import zio.http.Request
 import zio.{IO, ZIO}
 
 /** ServerUtils houses helper functions for parsing various elements of the API
@@ -19,7 +19,7 @@ object ServerUtils {
     */
   def parseBody[A: JsonDecoder](request: Request): IO[AppError, A] =
     for {
-      body   <- request.bodyAsString.orElseFail(AppError.MissingBodyError)
+      body   <- request.body.asString.orElseFail(AppError.MissingBodyError)
       parsed <- ZIO.from(body.fromJson[A]).mapError(AppError.JsonDecodingError)
     } yield parsed
 

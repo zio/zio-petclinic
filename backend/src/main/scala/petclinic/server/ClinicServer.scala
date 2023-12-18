@@ -1,9 +1,7 @@
 package petclinic.server
 
 import petclinic.Migrations
-import zhttp.http._
-import zhttp.http.middleware.HttpMiddleware
-import zhttp.service.Server
+import zio.http._
 import zio._
 
 /** ClinicServer is a service that houses the details for how to set up the
@@ -22,8 +20,16 @@ final case class ClinicServer(
 
   /** Composes the routes together, returning a single HttpApp.
     */
-  val allRoutes: HttpApp[Any, Throwable] =
+  val allRoutes: Routes[Any, Throwable] =
     ownerRoutes.routes ++ petRoutes.routes ++ vetRoutes.routes ++ visitRoutes.routes
+
+  /** Handles all errors with an internal server error response of the message
+    * and the stack trace.
+    */
+  def withDefaultErrorHandling(routes: Routes[Any, Throwable]): Routes[Any, Nothing] =
+    routes.handleErrorCause { cause =>
+      Response.internalServerError(cause.prettyPrint)
+    }
 
   /** Logs the requests made to the server.
     *
@@ -33,18 +39,17 @@ final case class ClinicServer(
     * For more information on the logging, see:
     * https://zio.github.io/zio-logging/
     */
-  val loggingMiddleware: HttpMiddleware[Any, Nothing] =
-    new HttpMiddleware[Any, Nothing] {
-      override def apply[R1 <: Any, E1 >: Nothing](
-          http: Http[R1, E1, Request, Response]
-      ): Http[R1, E1, Request, Response] =
-        Http.fromOptionFunction[Request] { request =>
-          Random.nextUUID.flatMap { requestId =>
-            ZIO.logAnnotate("REQUEST-ID", requestId.toString) {
-              for {
-                _      <- ZIO.logInfo(s"Request: $request")
-                result <- http(request)
-              } yield result
+  val loggingMiddleware: Middleware[Any] =
+    new Middleware[Any] {
+      override def apply[Env1 <: Any, Err](routes: Routes[Env1, Err]): Routes[Env1, Err] =
+        routes.transform { handler =>
+          handler.contramapZIO { request =>
+            Random.nextUUID.flatMap { requestId =>
+              ZIO.logAnnotate("REQUEST-ID", requestId.toString) {
+                for {
+                  _ <- ZIO.logInfo(s"Request: $request")
+                } yield request
+              }
             }
           }
         }
@@ -56,11 +61,10 @@ final case class ClinicServer(
     * port will be provided by Heroku, otherwise the port will be 8080. The
     * server is then started on the given port with the routes provided.
     */
-  def start: ZIO[Any, Throwable, Unit] =
+  def start: ZIO[Server, Nothing, Unit] =
     for {
-      _    <- migrations.reset.repeat(Schedule.fixed(15.minutes)).fork
-      port <- System.envOrElse("PORT", "8080").map(_.toInt)
-      _    <- Server.start(port, allRoutes @@ Middleware.cors() @@ loggingMiddleware)
+      _ <- migrations.reset.repeat(Schedule.fixed(15.minutes)).logError.fork
+      _ <- Server.serve((withDefaultErrorHandling(allRoutes) @@ Middleware.cors @@ loggingMiddleware).toHttpApp)
     } yield ()
 
 }
