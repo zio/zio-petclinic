@@ -32,7 +32,7 @@ final case class NavBar() extends Component {
 
   private def navLink(text: String, page: Page): Div = {
     val $isActive =
-      Router.router.$currentPage.map { currentPage =>
+      Router.router.currentPageSignal.map { currentPage =>
         currentPage == page
       }
     div(

@@ -14,7 +14,7 @@ object MainPage {
         cls("flex-grow sm:flex sm:justify-center"),
         div(
           cls("flex-grow max-w-screen-md"),
-          child <-- Router.router.$currentPage.map {
+          child <-- Router.router.currentPageSignal.map {
             case Page.OwnersPage         => OwnerIndexView()
             case Page.OwnerPage(ownerId) => OwnerViewWrapper(ownerId)
             case Page.HomePage           => HomeView()

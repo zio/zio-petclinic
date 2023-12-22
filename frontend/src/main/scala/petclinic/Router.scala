@@ -1,6 +1,6 @@
 package petclinic
 
-import com.raquo.laminar.api.L
+import com.raquo.laminar.api._
 import com.raquo.waypoint._
 import petclinic.models.OwnerId
 import zio.json._
@@ -42,7 +42,7 @@ object Router {
     serializePage = page => page.toJson,                                    // serialize page data for storage in History API log
     deserializePage = pageStr => pageStr.fromJson[Page].getOrElse(HomePage) // deserialize the above
   )(
-    $popStateEvent = L.windowEvents.onPopState, // this is how Waypoint avoids an explicit dependency on Laminar
-    owner = L.unsafeWindowOwner                 // this router will live as long as the window
+    popStateEvents = L.windowEvents(_.onPopState), // this is how Waypoint avoids an explicit dependency on Laminar
+    owner = L.unsafeWindowOwner                    // this router will live as long as the window
   )
 }

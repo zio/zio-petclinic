@@ -2,7 +2,6 @@ package petclinic.services
 
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
-import zio._
 import zio.test._
 
 /** A test suite for OwnerService which allows us to test that the methods
@@ -105,9 +104,6 @@ object OwnerServiceSpec extends ZIOSpecDefault {
     .provideShared(
       OwnerServiceLive.layer,
       ZPostgreSQLContainer.Settings.default,
-      ZPostgreSQLContainer.live,
-      TestContainerLayers.dataSourceLayer,
-      Live.default,
-      ZEnv.live
+      ZPostgreSQLContainer.live
     )
 }

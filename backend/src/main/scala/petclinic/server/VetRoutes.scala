@@ -1,8 +1,8 @@
 package petclinic.server
 
 import petclinic.services.VetService
-import zhttp.http._
 import zio._
+import zio.http._
 import zio.json.EncoderOps
 
 /** VetRoutes is a service that provides the routes for the VetService API. The
@@ -10,20 +10,19 @@ import zio.json.EncoderOps
   */
 final case class VetRoutes(service: VetService) {
 
-  val routes: Http[Any, Throwable, Request, Response] = Http.collectZIO[Request] {
+  val routes: Routes[Any, Throwable] =
+    Routes(
+      // Gets all of the Vets in the database and returns them as JSON.
+      Method.GET / "veterinarians" -> handler(service.getAll.map(vets => Response.json(vets.toJson))),
 
-    // Gets all of the Vets in the database and returns them as JSON.
-    case Method.GET -> !! / "veterinarians" =>
-      service.getAll.map(vets => Response.json(vets.toJson))
-
-    // Gets a single Vet found by their parsed ID and returns it as JSON.
-    case Method.GET -> !! / "veterinarians" / id =>
-      for {
-        vetId <- ServerUtils.parseVetId(id)
-        vet   <- service.get(vetId)
-      } yield Response.json(vet.toJson)
-
-  }
+      // Gets a single Vet found by their parsed ID and returns it as JSON.
+      Method.GET / "veterinarians" / string("id") -> handler { (id: String, req: Request) =>
+        for {
+          vetId <- ServerUtils.parseVetId(id)
+          vet   <- service.get(vetId)
+        } yield Response.json(vet.toJson)
+      }
+    )
 
 }
 

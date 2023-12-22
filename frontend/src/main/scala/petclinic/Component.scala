@@ -1,12 +1,18 @@
 package petclinic
 
-import com.raquo.laminar.api.L.{Owner => _, _}
+import com.raquo.laminar.api.L.HtmlElement
+import com.raquo.laminar.modifiers.RenderableNode
 
 trait Component {
   def body: HtmlElement
 }
 
 object Component {
-  implicit def component2HtmlElement(component: Component): HtmlElement =
-    component.body
+  implicit def componentRenderableNode: RenderableNode[Component] =
+    RenderableNode(
+      _.body,
+      _.map(_.body),
+      _.map(_.body),
+      _.map(_.body)
+    )
 }

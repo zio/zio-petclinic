@@ -38,6 +38,7 @@ final case class Migrations(dataSource: DataSource) {
     ZIO.attempt {
       Flyway
         .configure()
+        .cleanDisabled(false)
         .dataSource(dataSource)
         .baselineOnMigrate(true)
         .baselineVersion("0")

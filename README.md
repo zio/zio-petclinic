@@ -46,4 +46,4 @@ sbt
 ~ frontend/fastLinkJS
 ```
 
-Then open the browser and navigate to [localhost:3000](http://localhost:3000).
+Then open the browser and navigate to the address shown by vite, usually [localhost:5173](http://localhost:5173).

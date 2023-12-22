@@ -19,7 +19,7 @@ object Frontend {
 
   def waitForLoad(f: => Any): Unit =
     if (dom.window.asInstanceOf[js.Dynamic].documentLoaded == null)
-      documentEvents.onDomContentLoaded.foreach { _ =>
+      documentEvents(_.onDomContentLoaded).foreach { _ =>
         dom.window.asInstanceOf[js.Dynamic].documentLoaded = true
         f
       }(unsafeWindowOwner)

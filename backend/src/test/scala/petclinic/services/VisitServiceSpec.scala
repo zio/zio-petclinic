@@ -3,7 +3,6 @@ package petclinic.services
 import io.github.scottweaver.zio.aspect.DbMigrationAspect
 import io.github.scottweaver.zio.testcontainers.postgres.ZPostgreSQLContainer
 import petclinic.models._
-import zio._
 import zio.test._
 
 import java.time.LocalDate
@@ -128,10 +127,7 @@ object VisitServiceSpec extends ZIOSpecDefault {
     ZPostgreSQLContainer.Settings.default,
     ZPostgreSQLContainer.live,
     VisitServiceLive.layer,
-    VetServiceLive.layer,
-    TestContainerLayers.dataSourceLayer,
-    Live.default,
-    ZEnv.live
+    VetServiceLive.layer
   )
 
 }
